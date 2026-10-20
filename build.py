@@ -146,10 +146,17 @@ def load_changes(folder):
     for f in sorted(os.listdir(folder)):
         if not f.lower().endswith('.pdf'):
             continue
-        m = re.match(r'(\d{2})\.(\d{2})\.(\d{4})', f)
-        if not m:
+        name = f.lower()
+        iso = None
+        m = re.match(r'(\d{4})-(\d{2})-(\d{2})', name)
+        if m:
+            iso = '%s-%s-%s' % (m.group(1), m.group(2), m.group(3))
+        else:
+            m = re.match(r'(\d{2})\.(\d{2})\.(\d{4})', name)
+            if m:
+                iso = '%s-%s-%s' % (m.group(3), m.group(2), m.group(1))
+        if not iso:
             continue
-        iso = '%s-%s-%s' % (m.group(3), m.group(2), m.group(1))
         try:
             out[iso] = sc.parse_changes(os.path.join(folder, f))
         except Exception as e:
