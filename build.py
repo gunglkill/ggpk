@@ -239,22 +239,48 @@ input.q{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--l
 .foot{margin-top:26px;color:var(--muted);font-size:12px;text-align:center;line-height:1.7}
 .foot a{color:var(--muted)}
 .links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 6px}
-.links a{background:var(--card2);border:1px solid var(--line2);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--text)}
+.links a{background:var(--card2);border:1px solid var(--line2);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--text);display:inline-flex;align-items:center;gap:7px}
+.ic svg{flex:none;display:block}
+.ic.timer{gap:6px}
+#th .i-moon{display:none}
+html[data-theme=light] #th .i-sun{display:none}
+html[data-theme=light] #th .i-moon{display:inline-flex}
+.chip svg{vertical-align:-3px;margin-right:5px}
 """
 
 THEME_JS = ("try{var t=localStorage.getItem('ggpk.theme');"
             "if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}")
 
+
+def ic(path, size=18):
+    return ('<svg viewBox="0 0 24 24" width="%d" height="%d" fill="none" stroke="currentColor" '
+            'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">%s</svg>'
+            % (size, size, path))
+
+
+I_SUN = ic('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.9 4.9l1.4 1.4'
+           'M17.7 17.7l1.4 1.4M2.5 12h2M19.5 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>')
+I_MOON = ic('<path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/>')
+I_CLOCK = ic('<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/>', 16)
+I_USERS = ic('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.6 6-5.6s6 2.3 6 5.6"/>'
+             '<path d="M16.2 5.3a3 3 0 0 1 0 5.4M17.8 14.7c2.1.6 3.4 2.3 3.4 4.4"/>', 16)
+I_HEART = ic('<path d="M12 20.4S4.6 15.9 4.6 11A4.1 4.1 0 0 1 12 8.4 4.1 4.1 0 0 1 19.4 11'
+             'c0 4.9-7.4 9.4-7.4 9.4z"/>')
+I_HORN = ic('<path d="M3.5 11v2a1 1 0 0 0 1 1h2.2l4.3 4V6l-4.3 4H4.5a1 1 0 0 0-1 1z"/>'
+            '<path d="M14.5 8.5a4 4 0 0 1 0 7M17.5 6a8 8 0 0 1 0 12"/>')
+I_CHAT = ic('<path d="M4 5.5h16v10.2H8.6L4 19.6z"/>')
+I_SEARCH = ic('<circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6L20 20"/>')
+I_BELL = ic('<path d="M6.5 17h11l-1.3-2.2V10a4.2 4.2 0 1 0-8.4 0v4.8z"/>'
+            '<path d="M10.3 19.5a1.9 1.9 0 0 0 3.4 0"/>', 16)
+
 HEADER_EXTRA = """
 <script>
 (function(){
   var root=document.documentElement;
-  function icon(){var b=document.getElementById('th'); if(b) b.textContent=(root.getAttribute('data-theme')==='light')?'🌙':'☀️';}
   function toggle(){
     var next=(root.getAttribute('data-theme')==='light')?'dark':'light';
     root.setAttribute('data-theme',next);
     try{localStorage.setItem('ggpk.theme',next);}catch(e){}
-    icon();
   }
   function pad(n){return (n<10?'0':'')+n}
   function tick(){
@@ -262,21 +288,22 @@ HEADER_EXTRA = """
     next.setMinutes(7,0,0);
     if(next<=now) next.setHours(next.getHours()+1,7,0,0);
     var s=Math.round((next-now)/1000), m=Math.floor(s/60), r=s%60;
-    var el=document.getElementById('tm');
-    if(el) el.textContent='⏳ '+m+':'+(r<10?'0':'')+r;
+    var el=document.getElementById('tmt');
+    if(el) el.textContent=m+':'+(r<10?'0':'')+r;
   }
   document.addEventListener('click',function(e){
-    if(e.target&&e.target.id==='th'){toggle();}
+    var t=e.target.closest?e.target.closest('#th'):null;
+    if(t){toggle();}
   });
-  icon(); tick(); setInterval(tick,20000);
+  tick(); setInterval(tick,20000);
   try{
     var d=new Date(); var key=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
     var seen=sessionStorage.getItem('ggpk.v');
     if(!seen) sessionStorage.setItem('ggpk.v','1');
     var url='https://abacus.jasoncameron.dev/'+(seen?'get':'hit')+'/ggpk-site/views-'+key;
     fetch(url).then(function(r){return r.ok?r.json():null;}).then(function(j){
-      var el=document.getElementById('st');
-      if(el&&j&&j.value!=null) el.textContent='👥 '+j.value;
+      var el=document.getElementById('stt');
+      if(el&&j&&j.value!=null) el.textContent=j.value;
     }).catch(function(){});
   }catch(e){}
 })();
@@ -295,24 +322,29 @@ def head(title):
 
 def header():
     return ('<header class="hdr"><div class="hleft">'
-            '<button class="ic" id="th" title="Сменить тему">☀️</button>'
-            '<span class="ic timer" id="tm" title="До обновления расписания">⏳ --:--</span>'
-            '<span class="ic timer" id="st" title="Просмотров за сегодня">👥 —</span>'
+            '<button class="ic" id="th" title="Сменить тему">'
+            '<span class="i-sun">%s</span><span class="i-moon">%s</span></button>'
+            '<span class="ic timer" id="tm" title="До обновления расписания">%s'
+            '<span id="tmt">--:--</span></span>'
+            '<span class="ic timer" id="st" title="Просмотров за сегодня">%s'
+            '<span id="stt">—</span></span>'
             '</div><div class="hright">'
-            '<a class="ic" href="%s" target="_blank" rel="noopener" title="Поддержать проект">❤️</a>'
-            '<a class="ic" href="%s" target="_blank" rel="noopener" title="Канал с обновлениями">📢</a>'
-            '</div></header>' % (DONATE, CHANNEL))
+            '<a class="ic" href="%s" target="_blank" rel="noopener" title="Поддержать проект">%s</a>'
+            '<a class="ic" href="%s" target="_blank" rel="noopener" title="Канал с обновлениями">%s</a>'
+            '</div></header>'
+            % (I_SUN, I_MOON, I_CLOCK, I_USERS, DONATE, I_HEART, CHANNEL, I_HORN))
 
 
 def foot():
     return ('<div class="links">'
-            '<a href="%s" target="_blank" rel="noopener">❤️ Поддержать проект</a>'
-            '<a href="%s" target="_blank" rel="noopener">📢 Канал с обновлениями</a>'
-            '<a href="%s" target="_blank" rel="noopener">💬 Чат</a>'
+            '<a href="%s" target="_blank" rel="noopener">%s Поддержать проект</a>'
+            '<a href="%s" target="_blank" rel="noopener">%s Канал с обновлениями</a>'
+            '<a href="%s" target="_blank" rel="noopener">%s Чат</a>'
             '</div>'
             '<div class="foot">Расписание ГГПК · данные из сообщества ВК<br>'
             'обновлено %s · сборка каждый час</div>'
-            % (DONATE, CHANNEL, CHAT, datetime.now(MSK).strftime('%d.%m %H:%M')))
+            % (DONATE, I_HEART, CHANNEL, I_HORN, CHAT, I_CHAT,
+               datetime.now(MSK).strftime('%d.%m %H:%M')))
 
 
 def page(title, body):
@@ -339,7 +371,7 @@ def index_page(cat, mine):
         parts.append('</div>')
     parts.append('</div>')
     parts.append('<h2 class="course">Ещё</h2><div class="chips">'
-                 '<a class="chip" href="prep.html">🔍 Преподаватели</a></div>')
+                 '<a class="chip" href="prep.html">%s Преподаватели</a></div>' % I_SEARCH)
     js = ('<script>var NAMES=%s;'
           'try{var g=localStorage.getItem("ggpk.group");if(g&&NAMES[g]){'
           'document.getElementById("mine").innerHTML='
@@ -379,7 +411,7 @@ function table(rows){
   return h+'</tbody></table></div>';
 }
 function banner(status){
-  if(status==='changed') return '<div class="banner changed">🔔 Учтены изменения на эту дату.</div>';
+  if(status==='changed') return '<div class="banner changed">%s Учтены изменения на эту дату.</div>';
   if(status==='empty') return '<div class="banner">Без изменений.</div>';
   return '<div class="banner none">Изменений на эту дату в сообществе пока нет.</div>';
 }
@@ -433,7 +465,7 @@ def app_page(title, slug_, name, mode):
     body = ('<div class="sub">%s</div>'
             '<h1>%s</h1><div id="tabs" class="tabs"></div><div id="body">'
             '<div class="empty">Загрузка…</div></div>' % (back, html.escape(name)))
-    js = '<script>%s</script>' % (APP_JS % (slug_, name.replace("'", "\\'"), mode))
+    js = '<script>%s</script>' % (APP_JS % (slug_, name.replace("'", "\\'"), mode, I_BELL))
     return page(title, body + js)
 
 
