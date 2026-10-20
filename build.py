@@ -268,8 +268,9 @@ function banner(status){
   return '<div class="banner none">Изменений на эту дату в сообществе пока нет.</div>';
 }
 function renderDay(){
-  const t=new Date(); if(tab==='tomorrow') t.setDate(t.getDate()+1);
-  if(t.getDay()===0) return '<div class="day">Воскресенье, '+t.getDate()+' '+MONTHS[t.getMonth()]+'</div><div class="empty">Выходной день.</div>';
+  let t=new Date();
+  if(tab==='tomorrow'){ t.setDate(t.getDate()+1); if(t.getDay()===0) t.setDate(t.getDate()+1); }
+  if(t.getDay()===0) return '<div class="day">Воскресенье, '+t.getDate()+' '+MONTHS[t.getMonth()]+'</div><div class="empty">Сегодня выходной. Занятий нет.</div>';
   const key=iso(t), e=data.days[key];
   let h='<div class="day">'+(e?esc(e.label):'Нет данных')+'</div>';
   if(!e) return h+'<div class="empty">Расписание на эту дату ещё не собрано. Откройте «Неделя».</div>';
@@ -291,8 +292,9 @@ function renderWeek(){
   return h;
 }
 function paint(){
+  const nextName=(new Date().getDay()===5)?'Понедельник':'Завтра';
   $('#tabs').innerHTML='<button id="b1" class="'+(tab==='today'?'on':'')+'">Сегодня</button>'+
-    '<button id="b2" class="'+(tab==='tomorrow'?'on':'')+'">Завтра</button>'+
+    '<button id="b2" class="'+(tab==='tomorrow'?'on':'')+'">'+nextName+'</button>'+
     '<button id="b3" class="'+(tab==='week'?'on':'')+'">Неделя</button>';
   $('#body').innerHTML=(tab==='week')?renderWeek():renderDay();
   $('#b1').onclick=()=>{tab='today';paint();};
