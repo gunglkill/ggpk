@@ -248,6 +248,13 @@ h2.course{font-size:12.5px;color:var(--muted);font-weight:600;margin:26px 0 8px;
 .banner{border-radius:13px;padding:12px 14px;font-size:14px;margin:12px 0 6px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:9px;color:var(--muted)}
 .banner.changed{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-text)}
 .banner svg{flex:none}
+.tp-row{display:flex;align-items:center;gap:10px;margin:14px 0 2px;min-height:44px}
+.tp{display:inline-flex;align-items:center;gap:10px;padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line2)}
+.tp .lbl{font-size:13px;color:var(--muted)}
+.tp .val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.tp.done{width:44px;height:44px;padding:0;border-radius:50%;background:#fff;border:0;justify-content:center}
+.tp.done svg{color:#000}
+.tp-text{font-size:14.5px;font-weight:600}
 .day{margin:20px 0 8px;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
 table{width:100%;border-collapse:collapse;font-size:14px;min-width:500px}
@@ -613,6 +620,82 @@ function banner(status){
   if(status==='empty') return '<div class="banner">Без изменений.</div>';
   return '<div class="banner none">Изменений на эту дату в сообществе пока нет.</div>';
 }
+function parseSlots(rows){
+  const out=[];
+  (rows||[]).forEach(function(r){
+    const parts=String(r[1]||'').split('<br>');
+    const sl=[];
+    parts.forEach(function(p){
+      const m=p.replace(/\u2013/g,'-').match(/(\\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})/);
+      if(m) sl.push([+m[1]*60 + +m[2], +m[3]*60 + +m[4]]);
+    });
+    if(sl.length) out.push({pair:r[0], slots:sl});
+  });
+  return out;
+}
+
+function buildSegs(rows){
+  const pairs=parseSlots(rows), segs=[];
+  let cursor=420; // 07:00
+  pairs.forEach(function(p){
+    const s1=p.slots[0], s2=p.slots[1];
+    if(s1[0] > cursor) segs.push({a:cursor, b:s1[0], label:'До ' + p.pair + ' пары'});
+    segs.push({a:s1[0], b:s1[1], label:'До перемены'});
+    if(s2){
+      if(s2[0] > s1[1]) segs.push({a:s1[1], b:s2[0], label:'До 2 урока'});
+      segs.push({a:s2[0], b:s2[1], label:'До конца ' + p.pair + ' пары'});
+      cursor=s2[1];
+    } else {
+      cursor=s1[1];
+    }
+  });
+  return {segs:segs, end:cursor, first:segs.length?segs[0].a:420};
+}
+
+function fmt(sec){
+  sec=Math.max(0, Math.round(sec));
+  const h=Math.floor(sec/3600), m=Math.floor((sec%%3600)/60), s=sec%%60;
+  const p=n=>(n<10?'0':'')+n;
+  return h>0 ? h+':'+p(m)+':'+p(s) : p(m)+':'+p(s);
+}
+
+function tickTimerDraw(box, rows){
+  if(!box) return;
+  const plan=buildSegs(rows);
+  const now=new Date();
+  const mins=now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
+  if(!plan.segs.length){
+    box.innerHTML='<span class="tp-text">Пар нет</span>';
+    return;
+  }
+  if(mins < 420 || mins >= plan.end){
+    box.innerHTML='<span class="tp done"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" '+
+      'stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">'+
+      '<path d="M5 12.6l4.4 4.4L19 7.6"/></svg></span>'+
+      '<span class="tp-text">Занятия окончены</span>';
+    return;
+  }
+  let seg=null;
+  for(let i=0;i<plan.segs.length;i++){
+    const s2=plan.segs[i];
+    if(mins>=s2.a && mins<s2.b){seg=s2;break;}
+  }
+  if(!seg){
+    seg=plan.segs[plan.segs.length-1];
+  }
+  const left=(seg.b-mins)*60;
+  box.innerHTML='<span class="tp"><span class="lbl">'+esc(seg.label)+
+    '</span><span class="val">'+fmt(left)+'</span></span>';
+}
+
+function startTicker(rows){
+  if(window.__tpTimer){clearInterval(window.__tpTimer);window.__tpTimer=null;}
+  const box=document.getElementById('tprow');
+  if(!box) return;
+  tickTimerDraw(box, rows);
+  window.__tpTimer=setInterval(function(){tickTimerDraw(box, rows);}, 1000);
+}
+
 function renderDay(){
   let t=new Date();
   if(tab==='tomorrow'){ t.setDate(t.getDate()+1); if(t.getDay()===0) t.setDate(t.getDate()+1); }
@@ -621,6 +704,7 @@ function renderDay(){
   let h='<div class="day">'+(e?esc(e.label):'Нет данных')+'</div>';
   if(!e) return h+'<div class="empty">Расписание на эту дату ещё не собрано. Откройте «Неделя».</div>';
   h+='<div class="sub" style="margin:2px 0 0">'+esc(NAME)+' · неделя '+e.week+' · '+esc(e.kind)+'</div>';
+  h+='<div class="tp-row" id="tprow"></div>';
   h+=banner(e.status);
   h+=e.rows.length?table(e.rows):'<div class="empty">Пар нет.</div>';
   return h;
@@ -644,6 +728,13 @@ function paint(){
     '<button id="b2" class="'+(tab==='tomorrow'?'on':'')+'">'+nextName+'</button>'+
     '<button id="b3" class="'+(tab==='week'?'on':'')+'">Неделя</button>';
   $('#body').innerHTML=(tab==='week')?renderWeek():renderDay();
+  if(tab==='week'){
+    if(window.__tpTimer){clearInterval(window.__tpTimer);window.__tpTimer=null;}
+  } else {
+    const t=new Date(); if(tab==='tomorrow') t.setDate(t.getDate()+1);
+    const key=iso(t); const e=data.days[key];
+    startTicker(e?e.rows:[]);
+  }
   $('#b1').onclick=()=>{tab='today';paint();};
   $('#b2').onclick=()=>{tab='tomorrow';paint();};
   $('#b3').onclick=()=>{tab='week';paint();};
