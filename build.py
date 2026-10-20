@@ -217,7 +217,7 @@ a:hover{text-decoration:none}
 html[data-theme=light] #th .i-moon{display:none}
 html[data-theme=light] #th .i-sun{display:inline-flex}
 h1{font-size:clamp(30px,7vw,44px);line-height:1.04;letter-spacing:-.035em;font-weight:800;margin:26px 0 18px}
-.sub{color:var(--muted);font-size:13px;margin:-8px 0 14px}
+.sub{color:var(--muted);font-size:13px;margin:4px 0 6px}
 .mine{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;margin:0 0 14px;font-weight:600}
 .mine span{color:var(--muted);font-size:13px;font-weight:400}
 .search{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px 16px;margin:0 0 14px;color:var(--muted)}
