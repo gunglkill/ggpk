@@ -18,6 +18,7 @@ import schedule_core as sc  # noqa: E402
 OUT = os.path.join(HERE, 'site')
 MSK = timezone(timedelta(hours=5))
 HORIZON = 8
+VER = datetime.now(MSK).strftime('%Y%m%d%H%M')
 
 DONATE = 'https://dalink.to/mori_iuvenis'
 CHANNEL = 'https://t.me/+p3brK1bafQplNmNi'
@@ -257,6 +258,9 @@ html[data-theme=light] #th .i-moon{display:inline-flex}
 .mbtn{display:block;padding:12px;border-radius:12px;background:var(--accent-bg);border:1px solid var(--accent-line);font-weight:600;color:var(--text);margin-bottom:8px}
 .mbtn:hover{text-decoration:none}
 .mno{width:100%;padding:10px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--muted);font-family:inherit;font-size:14px;cursor:pointer}
+.ic.timer{cursor:pointer}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;max-width:calc(100% - 28px);background:var(--card2);border:1px solid var(--line2);color:var(--text);padding:11px 15px;border-radius:12px;font-size:13.5px;line-height:1.4;text-align:center;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.3);transition:opacity .2s ease,transform .26s cubic-bezier(.16,.9,.3,1.25)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
 """
 
 THEME_JS = ("try{var t=localStorage.getItem('ggpk.theme');"
@@ -341,9 +345,20 @@ HEADER_EXTRA = """
     var el=document.getElementById('tmt');
     if(el) el.textContent=m+':'+(r<10?'0':'')+r;
   }
+  var toastT=null;
+  function toast(txt){
+    var el=document.getElementById('toast'); if(!el) return;
+    el.textContent=txt; el.classList.add('on');
+    if(toastT) clearTimeout(toastT);
+    toastT=setTimeout(function(){el.classList.remove('on');},5000);
+  }
   document.addEventListener('click',function(e){
     var th=e.target.closest?e.target.closest('#th'):null;
     if(th){toggle();return;}
+    var st=e.target.closest?e.target.closest('#st'):null;
+    if(st){toast('Это счётчик пользователей за день');return;}
+    var tm=e.target.closest?e.target.closest('#tm'):null;
+    if(tm){toast('Это таймер до обновления расписания');return;}
     var b=e.target.closest?e.target.closest('[data-modal]'):null;
     if(b){e.preventDefault();openModal(b.getAttribute('data-modal'));return;}
     if(e.target.id==='m'||(e.target.closest&&e.target.closest('#mno'))){closeModal();}
@@ -373,6 +388,9 @@ HEADER_EXTRA = """
 })();
 </script>
 """
+
+
+TOAST_HTML = '<div class="toast" id="toast"></div>'
 
 
 def head(title):
@@ -415,7 +433,7 @@ def foot():
 
 def page(title, body):
     return head(title) + header() + '<div class="wrap">' + body + foot() + \
-        '</div>' + MODAL_HTML + HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL) + '</body></html>'
+        '</div>' + MODAL_HTML + TOAST_HTML + HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL) + '</body></html>'
 
 
 # ---------------- страницы ----------------
@@ -432,12 +450,12 @@ def index_page(cat, mine):
     for i, (course, groups) in enumerate(courses):
         parts.append('<div class="clist" data-c="%d"%s>' % (i, '' if i == 0 else ' hidden'))
         for g in groups:
-            parts.append('<a class="chip" href="g/%s.html" data-g="%s">%s</a>'
-                         % (slug(g), slug(g), html.escape(g)))
+            parts.append('<a class="chip" href="g/%s.html?v=%s" data-g="%s">%s</a>'
+                         % (slug(g), VER, slug(g), html.escape(g)))
         parts.append('</div>')
     parts.append('</div>')
     parts.append('<h2 class="course">Ещё</h2><div class="chips">'
-                 '<a class="chip" href="prep.html">%s Преподаватели</a></div>' % I_SEARCH)
+                 '<a class="chip" href="prep.html?v=%s">%s Преподаватели</a></div>' % (VER, I_SEARCH))
     js = ('<script>var NAMES=%s;'
           'try{var g=localStorage.getItem("ggpk.group");if(g&&NAMES[g]){'
           'document.getElementById("mine").innerHTML='
@@ -518,36 +536,36 @@ function paint(){
   if(tab==='week'){$('#pn').onclick=()=>{parity='n';paint();};$('#pz').onclick=()=>{parity='z';paint();};}
 }
 if(MODE==='g'){try{localStorage.setItem('ggpk.group',G);}catch(e){}}
-fetch('../data/'+(MODE==='t'?'p':'g')+'/'+G+'.json').then(r=>r.json()).then(d=>{data=d;paint();})
+fetch('../data/'+(MODE==='t'?'p':'g')+'/'+G+'.json?v=%s').then(r=>r.json()).then(d=>{data=d;paint();})
  .catch(()=>{$('#body').innerHTML='<div class="empty">Не удалось загрузить расписание.</div>';});
 """
 
 
 def app_page(title, slug_, name, mode):
     if mode == 't':
-        back = '<a href="../prep.html">← преподаватели</a>'
+        back = '<a href="../prep.html?v=%s">← преподаватели</a>' % VER
     else:
-        back = '<a href="../index.html">← все группы</a>'
+        back = '<a href="../index.html?v=%s">← все группы</a>' % VER
     body = ('<div class="sub">%s</div>'
             '<h1>%s</h1><div id="tabs" class="tabs"></div><div id="body">'
             '<div class="empty">Загрузка…</div></div>' % (back, html.escape(name)))
-    js = '<script>%s</script>' % (APP_JS % (slug_, name.replace("'", "\\'"), mode, I_BELL))
+    js = '<script>%s</script>' % (APP_JS % (slug_, name.replace("'", "\\'"), mode, I_BELL, VER))
     return page(title, body + js)
 
 
 def prep_index(teachers):
     items = sorted(teachers)
-    rows = ['<a class="chip" data-n="%s" href="p/%s.html">%s</a>'
-            % (html.escape(t.lower()), slug(t), html.escape(t)) for t in items]
+    rows = ['<a class="chip" data-n="%s" href="p/%s.html?v=%s">%s</a>'
+            % (html.escape(t.lower()), slug(t), VER, html.escape(t)) for t in items]
     body = ('<h1>Преподаватели</h1><div class="sub">Всего: %d · выберите, чтобы открыть расписание</div>'
             '<input class="q" id="q" placeholder="Фамилия, например Коваль" autocomplete="off">'
             '<div class="chips" id="list">%s</div>'
-            '<p><a href="index.html">← всё расписание</a></p>'
+            '<p><a href="index.html?v=%s">← всё расписание</a></p>'
             '<script>var q=document.getElementById("q"),l=document.getElementById("list");'
             'q.addEventListener("input",function(){var v=q.value.toLowerCase().trim();'
             'Array.prototype.forEach.call(l.children,function(a){'
             'a.style.display=a.dataset.n.indexOf(v)>-1?"":"none";});});</script>'
-            % (len(items), ''.join(rows)))
+            % (len(items), ''.join(rows), VER))
     return page('Преподаватели', body)
 
 
