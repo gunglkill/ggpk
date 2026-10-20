@@ -379,13 +379,15 @@ HEADER_EXTRA = """
     try{localStorage.setItem('ggpk.theme',next);}catch(e){}
   }
   function pad(n){return (n<10?'0':'')+n}
+  var tmLeft='--:--';
   function tick(){
     var now=new Date(), next=new Date(now);
     next.setMinutes(7,0,0);
     if(next<=now) next.setHours(next.getHours()+1,7,0,0);
     var s=Math.round((next-now)/1000), m=Math.floor(s/60), r=s%60;
+    tmLeft=m+':'+(r<10?'0':'')+r;
     var el=document.getElementById('tmt');
-    if(el) el.textContent=m+':'+(r<10?'0':'')+r;
+    if(el) el.textContent=tmLeft;
   }
   var toastT=null;
   function toast(txt){
@@ -398,9 +400,10 @@ HEADER_EXTRA = """
     var th=e.target.closest?e.target.closest('#th'):null;
     if(th){toggle();return;}
     var st=e.target.closest?e.target.closest('#st'):null;
-    if(st){toast('Это счётчик пользователей за день');return;}
+    if(st){var n=document.getElementById('stt');
+      toast('Пользователей за сегодня: '+(n?n.textContent:'—'));return;}
     var tm=e.target.closest?e.target.closest('#tm'):null;
-    if(tm){toast('Это таймер до обновления расписания');return;}
+    if(tm){toast('До обновления расписания: '+tmLeft);return;}
     var b=e.target.closest?e.target.closest('[data-modal]'):null;
     if(b){e.preventDefault();openModal(b.getAttribute('data-modal'));return;}
     if(e.target.id==='m'||(e.target.closest&&e.target.closest('#mno'))){closeModal();}
