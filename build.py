@@ -456,8 +456,12 @@ def foot():
 
 
 def page(title, body, home='index.html'):
-    return head(title) + header(home) + '<div class="wrap">' + body + foot() + \
-        '</div>' + MODAL_HTML + TOAST_HTML + HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL) + '</body></html>'
+    noscript = ('<noscript><div class="wrap"><div class="empty">Включите JavaScript — '
+                'без него расписание не отобразится.</div></div></noscript>')
+    tail = HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL)
+    return (head(title) + header(home) + noscript +
+            '<div class="wrap">' + body + foot() + '</div>' +
+            MODAL_HTML + TOAST_HTML + tail + '</body></html>')
 
 
 # ---------------- страницы ----------------
@@ -560,8 +564,12 @@ function paint(){
   if(tab==='week'){$('#pn').onclick=()=>{parity='n';paint();};$('#pz').onclick=()=>{parity='z';paint();};}
 }
 if(MODE==='g'){try{localStorage.setItem('ggpk.group',G);}catch(e){}}
-fetch('../data/'+(MODE==='t'?'p':'g')+'/'+G+'.json?v=%s').then(r=>r.json()).then(d=>{data=d;paint();})
- .catch(()=>{$('#body').innerHTML='<div class="empty">Не удалось загрузить расписание.</div>';});
+var watchdog=setTimeout(function(){
+  if(!data){var b=document.getElementById('body');
+    if(b) b.innerHTML='<div class="empty">Долго нет ответа. Проверьте интернет и обновите страницу.</div>';}
+},7000);
+fetch('../data/'+(MODE==='t'?'p':'g')+'/'+G+'.json?v=%s').then(r=>r.json()).then(d=>{data=d;clearTimeout(watchdog);paint();})
+ .catch(()=>{clearTimeout(watchdog);$('#body').innerHTML='<div class="empty">Не удалось загрузить расписание.</div>';});
 """
 
 
