@@ -247,6 +247,7 @@ input.q{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #2a3a4a
 
 APP_JS = """
 const G='%s', NAME='%s', COURSE='%s';
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 let data=null, tab='today', parity='n';
 const $=s=>document.querySelector(s);
 function iso(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
@@ -268,6 +269,7 @@ function banner(status){
 }
 function renderDay(){
   const t=new Date(); if(tab==='tomorrow') t.setDate(t.getDate()+1);
+  if(t.getDay()===0) return '<div class="day">Воскресенье, '+t.getDate()+' '+MONTHS[t.getMonth()]+'</div><div class="empty">Выходной день.</div>';
   const key=iso(t), e=data.days[key];
   let h='<div class="day">'+(e?esc(e.label):'Нет данных')+'</div>';
   if(!e) return h+'<div class="empty">Расписание на эту дату ещё не собрано. Откройте «Неделя».</div>';
@@ -279,10 +281,13 @@ function renderDay(){
 function renderWeek(){
   let h='<div class="switch"><button id="pn" class="'+(parity==='n'?'on':'')+'">Числитель</button><button id="pz" class="'+(parity==='z'?'on':'')+'">Знаменатель</button></div>';
   const days=data.week[parity]||[];
-  for(const d of days){
-    if(!d.rows.length) continue;
-    h+='<div class="day">'+esc(d.day)+'</div>'+table(d.rows);
-  }
+  const now=new Date(), mon=new Date(now);
+  mon.setDate(now.getDate()-((now.getDay()+6)%%7));
+  days.forEach(function(d,i){
+    if(!d.rows.length) return;
+    const dt=new Date(mon); dt.setDate(mon.getDate()+i);
+    h+='<div class="day">'+esc(d.day)+', '+dt.getDate()+' '+MONTHS[dt.getMonth()]+'</div>'+table(d.rows);
+  });
   return h;
 }
 function paint(){
