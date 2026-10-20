@@ -405,7 +405,7 @@ const $=s=>document.querySelector(s);
 function iso(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function table(rows){
-  const h5=(MODE==='t')?'Группа':'Преподаватель';
+  const h5=(MODE==='t')?'Пара':'Преподаватель';
   let h='<div class="tw"><table><thead><tr><th>№</th><th>Время</th><th>'+(MODE==='t'?'Группа':'Пара')+'</th><th>Ауд.</th><th>'+h5+'</th></tr></thead><tbody>';
   if(!rows.some(r=>r[0]===1)&&rows.length){
     h+='<tr><td class="n">1</td><td class="t muted">—</td><td class="s muted">—</td><td class="r muted">—</td><td class="p muted">—</td></tr>';
@@ -413,7 +413,7 @@ function table(rows){
   for(const r of rows){
     const c3=esc(r[2])||'—', c4=esc(r[3])||'—', c5=esc(r[4])||'—';
     if(MODE==='t'){
-      h+='<tr><td class="n">'+r[0]+'</td><td class="t">'+(r[1]||'—')+'</td><td class="s">'+c3+'</td><td class="r">'+c5+'</td><td class="p">'+c4+'</td></tr>';
+      h+='<tr><td class="n">'+r[0]+'</td><td class="t">'+(r[1]||'—')+'</td><td class="r">'+c3+'</td><td class="r">'+c5+'</td><td class="s">'+c4+'</td></tr>';
     }else{
       h+='<tr><td class="n">'+r[0]+'</td><td class="t">'+(r[1]||'—')+'</td><td class="s">'+c3+'</td><td class="r">'+c4+'</td><td class="p">'+c5+'</td></tr>';
     }
