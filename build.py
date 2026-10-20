@@ -195,6 +195,7 @@ html[data-theme=light]{--bg:#fff;--card:#f7f7f7;--card2:#efefef;--line:#e6e6e6;-
 --warn-bg:#fff7dd;--warn-line:#e0c164;--warn-text:#6b5200;--head:rgba(255,255,255,.8);
 --shadow:0 16px 40px -26px rgba(0,0,0,.35)}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:680px;margin:0 auto;padding:0 18px 96px}
 a{color:inherit;text-decoration:none}
