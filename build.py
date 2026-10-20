@@ -246,6 +246,17 @@ input.q{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--l
 html[data-theme=light] #th .i-sun{display:none}
 html[data-theme=light] #th .i-moon{display:inline-flex}
 .chip svg{vertical-align:-3px;margin-right:5px}
+.modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .22s ease}
+.modal.on{opacity:1;pointer-events:auto}
+.mcard{width:100%;max-width:370px;background:var(--card);border:1px solid var(--line2);border-radius:18px;padding:22px 20px 18px;text-align:center;transform:translateY(18px) scale(.94);opacity:0;transition:transform .3s cubic-bezier(.16,.9,.3,1.25),opacity .22s ease}
+.modal.on .mcard{transform:none;opacity:1}
+.micon{display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:16px;background:var(--card2);border:1px solid var(--line2);margin-bottom:12px}
+.micon svg{width:26px;height:26px}
+.mtitle{font-size:17px;font-weight:600;margin-bottom:6px;line-height:1.35}
+.mtext{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.mbtn{display:block;padding:12px;border-radius:12px;background:var(--accent-bg);border:1px solid var(--accent-line);font-weight:600;color:var(--text);margin-bottom:8px}
+.mbtn:hover{text-decoration:none}
+.mno{width:100%;padding:10px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--muted);font-family:inherit;font-size:14px;cursor:pointer}
 """
 
 THEME_JS = ("try{var t=localStorage.getItem('ggpk.theme');"
@@ -273,10 +284,49 @@ I_SEARCH = ic('<circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6L20 20"/>')
 I_BELL = ic('<path d="M6.5 17h11l-1.3-2.2V10a4.2 4.2 0 1 0-8.4 0v4.8z"/>'
             '<path d="M10.3 19.5a1.9 1.9 0 0 0 3.4 0"/>', 16)
 
+I_DA = ('<svg viewBox="0 0 24 24" width="18" height="18" fill="#ff5c5c">'
+        '<path d="M12 20.6S4.2 16 4.2 10.7A4.6 4.6 0 0 1 12 7.6a4.6 4.6 0 0 1 7.8 3.1'
+        'c0 5.3-7.8 9.9-7.8 9.9z"/></svg>')
+I_TG = ('<svg viewBox="0 0 24 24" width="18" height="18" fill="#229ED9">'
+        '<path d="M21.6 4.5 2.9 11.7c-.9.4-.9 1.2 0 1.5l4.6 1.5 1.8 5.5c.2.6.9.7 1.3.3l2.5-2.6 4.7 3.4'
+        'c.6.4 1.3.1 1.5-.6l3-14.3c.2-.9-.5-1.5-1.4-1.2z"/></svg>')
+
+MODAL_HTML = ('<div class="modal" id="m"><div class="mcard">'
+              '<div class="micon" id="micon"></div>'
+              '<div class="mtitle" id="mtitle"></div>'
+              '<div class="mtext" id="mtext"></div>'
+              '<a class="mbtn" id="mgo" href="#" target="_blank" rel="noopener"></a>'
+              '<button class="mno" id="mno">Закрыть</button>'
+              '</div></div>'
+              '<span id="ic-donate" hidden>%s</span>'
+              '<span id="ic-tg" hidden>%s</span>' % (I_DA, I_TG))
+
 HEADER_EXTRA = """
 <script>
 (function(){
   var root=document.documentElement;
+  var MODAL={
+    donate:{t:'Хотите поддержать проект?',
+            x:'Это поможет оплатить сервер, чтобы расписание работало круглосуточно и без пропусков.',
+            b:'Донат', u:'__DONATE__', i:'ic-donate'},
+    tg:{t:'Хотите перейти в Telegram-канал разработчика?',
+        x:'Там логи обновлений, новости проекта и всё, что меняется на сайте.',
+        b:'Перейти', u:'__CHANNEL__', i:'ic-tg'}
+  };
+  function openModal(k){
+    var d=MODAL[k]; if(!d) return;
+    var src=document.getElementById(d.i);
+    var box=document.getElementById('micon');
+    if(box) box.innerHTML=src?src.innerHTML:'';
+    var t=document.getElementById('mtitle'); if(t) t.textContent=d.t;
+    var x=document.getElementById('mtext'); if(x) x.textContent=d.x;
+    var go=document.getElementById('mgo');
+    if(go){go.textContent=d.b; go.href=d.u;}
+    var m=document.getElementById('m'); if(m) m.classList.add('on');
+  }
+  function closeModal(){
+    var m=document.getElementById('m'); if(m) m.classList.remove('on');
+  }
   function toggle(){
     var next=(root.getAttribute('data-theme')==='light')?'dark':'light';
     root.setAttribute('data-theme',next);
@@ -292,9 +342,13 @@ HEADER_EXTRA = """
     if(el) el.textContent=m+':'+(r<10?'0':'')+r;
   }
   document.addEventListener('click',function(e){
-    var t=e.target.closest?e.target.closest('#th'):null;
-    if(t){toggle();}
+    var th=e.target.closest?e.target.closest('#th'):null;
+    if(th){toggle();return;}
+    var b=e.target.closest?e.target.closest('[data-modal]'):null;
+    if(b){e.preventDefault();openModal(b.getAttribute('data-modal'));return;}
+    if(e.target.id==='m'||(e.target.closest&&e.target.closest('#mno'))){closeModal();}
   });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
   tick(); setInterval(tick,20000);
   try{
     var el=document.getElementById('stt');
@@ -339,27 +393,29 @@ def header():
             '<span class="ic timer" id="st" title="Просмотров за сегодня">%s'
             '<span id="stt">—</span></span>'
             '</div><div class="hright">'
-            '<a class="ic" href="%s" target="_blank" rel="noopener" title="Поддержать проект">%s</a>'
-            '<a class="ic" href="%s" target="_blank" rel="noopener" title="Канал с обновлениями">%s</a>'
+            '<a class="ic" href="%s" data-modal="donate" target="_blank" rel="noopener" '
+            'title="Поддержать проект">%s</a>'
+            '<a class="ic" href="%s" data-modal="tg" target="_blank" rel="noopener" '
+            'title="Канал с обновлениями">%s</a>'
             '</div></header>'
-            % (I_SUN, I_MOON, I_CLOCK, I_USERS, DONATE, I_HEART, CHANNEL, I_HORN))
+            % (I_SUN, I_MOON, I_CLOCK, I_USERS, DONATE, I_DA, CHANNEL, I_TG))
 
 
 def foot():
     return ('<div class="links">'
-            '<a href="%s" target="_blank" rel="noopener">%s Поддержать проект</a>'
-            '<a href="%s" target="_blank" rel="noopener">%s Канал с обновлениями</a>'
+            '<a href="%s" data-modal="donate" target="_blank" rel="noopener">%s Поддержать проект</a>'
+            '<a href="%s" data-modal="tg" target="_blank" rel="noopener">%s Канал с обновлениями</a>'
             '<a href="%s" target="_blank" rel="noopener">%s Чат</a>'
             '</div>'
             '<div class="foot">Расписание ГГПК · данные из сообщества ВК<br>'
             'обновлено %s · сборка каждый час</div>'
-            % (DONATE, I_HEART, CHANNEL, I_HORN, CHAT, I_CHAT,
+            % (DONATE, I_DA, CHANNEL, I_TG, CHAT, I_CHAT,
                datetime.now(MSK).strftime('%d.%m %H:%M')))
 
 
 def page(title, body):
     return head(title) + header() + '<div class="wrap">' + body + foot() + \
-        '</div>' + HEADER_EXTRA + '</body></html>'
+        '</div>' + MODAL_HTML + HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL) + '</body></html>'
 
 
 # ---------------- страницы ----------------
