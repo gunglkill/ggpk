@@ -186,89 +186,98 @@ def dates_window(today):
 
 # ---------------- html ----------------
 CSS = """
-:root{--bg:#08080a;--card:#111113;--card2:#1a1a1d;--line:#26262a;--line2:#323236;
---text:#f3f4f6;--muted:#9a9ba3;--accent:#7aa2ff;--accent-bg:#1c2233;--accent-line:#3d5a8c;
---warn-bg:#2b2416;--warn-line:#8a6c25;--warn-text:#f3d98c;--head:rgba(8,8,10,.86);
---shadow:0 14px 34px -22px rgba(0,0,0,.95)}
-html[data-theme=light]{--bg:#f6f6f8;--card:#ffffff;--card2:#ececee;--line:#e2e2e6;--line2:#d2d2d8;
---text:#141416;--muted:#64646c;--accent:#2563eb;--accent-bg:#e8efff;--accent-line:#aac3f7;
---warn-bg:#fff7dd;--warn-line:#e0c164;--warn-text:#6b5200;--head:rgba(246,246,248,.88);
---shadow:0 14px 30px -24px rgba(20,22,30,.45)}
+:root{--bg:#000;--card:#0d0d0d;--card2:#151515;--line:#1f1f1f;--line2:#2a2a2a;
+--text:#fff;--muted:#8b8b8b;--pill:#fff;--pill-text:#000;--accent:#7aa2ff;
+--warn-bg:#241d08;--warn-line:#7a5f1c;--warn-text:#f0d68a;--head:rgba(0,0,0,.78);
+--shadow:0 16px 40px -24px rgba(0,0,0,.9)}
+html[data-theme=light]{--bg:#fff;--card:#f7f7f7;--card2:#efefef;--line:#e6e6e6;--line2:#d9d9d9;
+--text:#0a0a0a;--muted:#6a6a6a;--pill:#0a0a0a;--pill-text:#fff;--accent:#2563eb;
+--warn-bg:#fff7dd;--warn-line:#e0c164;--warn-text:#6b5200;--head:rgba(255,255,255,.8);
+--shadow:0 16px 40px -26px rgba(0,0,0,.35)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
-.wrap{max-width:900px;margin:0 auto;padding:0 14px 40px}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-.hdr{position:sticky;top:0;z-index:20;background:var(--head);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.hin{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:9px 14px}
-.brand{display:flex;align-items:center;gap:9px;min-width:0;color:inherit}
-.brand:hover{text-decoration:none}
-.brand .mark{width:34px;height:34px;flex:none;border-radius:11px;background:linear-gradient(135deg,#5b8def,#8b5cf6);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.03em;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px -12px rgba(91,141,239,.95)}
-.brand .bt{min-width:0}
-.brand b{display:block;font-size:14.5px;font-weight:650;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.brand i{display:block;font-style:normal;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tools{margin-left:auto;display:flex;align-items:center;gap:6px}
-@media (max-width:560px){.brand i{display:none}.brand b{font-size:13.5px}.tools{gap:4px}}
-.ic{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:36px;height:34px;padding:0 9px;border-radius:10px;border:1px solid var(--line2);background:var(--card2);color:var(--text);font-size:14px;cursor:pointer;font-family:inherit;transition:border-color .15s,transform .15s}
-.ic:hover{border-color:var(--accent-line);text-decoration:none}
+.wrap{max-width:680px;margin:0 auto;padding:0 18px 96px}
+a{color:inherit;text-decoration:none}
+a:hover{text-decoration:none}
+.hdr{position:sticky;top:0;z-index:20;background:var(--head);backdrop-filter:blur(16px)}
+.hin{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:14px 18px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand .mark{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.brand b{display:block;font-size:15px;font-weight:700;line-height:1.2;letter-spacing:-.01em}
+.brand i{display:block;font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.tools{margin-left:auto;display:flex;align-items:center;gap:4px}
+@media (max-width:600px){.brand i{display:none}}
+.ic{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:36px;height:36px;border-radius:11px;border:1px solid transparent;background:transparent;color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex:none}
+.ic:hover{background:var(--card2);border-color:var(--line)}
 .ic:active{transform:scale(.96)}
-.ic svg{flex:none;display:block}
-.ic.timer{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;cursor:pointer}
+.ic svg{display:block}
+.ic.num{width:auto;min-width:36px;padding:0 9px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
 #th .i-moon{display:none}
 html[data-theme=light] #th .i-sun{display:none}
 html[data-theme=light] #th .i-moon{display:inline-flex}
-h1{font-size:26px;line-height:1.2;letter-spacing:-.02em;margin:14px 0 4px;font-weight:700}
-.sub{color:var(--muted);font-size:13px;margin-bottom:14px}
-.mine{position:relative;display:block;padding:16px;border-radius:18px;margin:6px 0 20px;background:linear-gradient(135deg,rgba(110,168,254,.14),rgba(139,92,246,.12));border:1px solid var(--accent-line);box-shadow:var(--shadow)}
-.mine b{font-size:21px;font-weight:700;letter-spacing:-.01em;display:block;margin-bottom:3px}
-.mine span{color:var(--muted);font-size:13px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
-.chip{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:9px 13px;font-size:14px;color:var(--text);display:inline-block;cursor:pointer;transition:border-color .15s,transform .15s,background .15s}
-.chip:hover{border-color:var(--accent-line);text-decoration:none;transform:translateY(-1px)}
-.chip.on{background:var(--accent-bg);border-color:var(--accent-line);font-weight:600}
-.chip svg{vertical-align:-3px;margin-right:6px}
-h2.course{font-size:12.5px;color:var(--muted);font-weight:600;margin:20px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.04;letter-spacing:-.035em;font-weight:800;margin:26px 0 18px}
+.sub{color:var(--muted);font-size:13px;margin:-8px 0 14px}
+.mine{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;margin:0 0 14px;font-weight:600}
+.mine span{color:var(--muted);font-size:13px;font-weight:400}
+.search{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px 16px;margin:0 0 14px;color:var(--muted)}
+.search input{flex:1;background:none;border:0;outline:none;color:var(--text);font-size:15px;font-family:inherit}
+.search input::placeholder{color:var(--muted)}
+.ccs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;margin-bottom:14px;scrollbar-width:none}
+.ccs::-webkit-scrollbar{display:none}
+.cc{display:inline-flex;white-space:nowrap;padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:14px;color:var(--text);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.cc.on{background:var(--pill);color:var(--pill-text);border-color:var(--pill);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:360px){.grid{grid-template-columns:1fr}}
+.gcard{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:17px 15px;border-radius:16px;background:var(--card);border:1px solid var(--line);font-size:15px;font-weight:600;letter-spacing:-.01em;transition:border-color .15s,background .15s,transform .15s}
+.gcard:hover{border-color:#3a3a3a;background:#121212;transform:translateY(-1px)}
+html[data-theme=light] .gcard:hover{background:#f0f0f0;border-color:#c9c9c9}
+.gcard svg{color:var(--muted);flex:none}
+.gcard.on{border-color:var(--pill);box-shadow:0 0 0 1px var(--pill) inset}
+h2.course{font-size:12.5px;color:var(--muted);font-weight:600;margin:26px 0 8px;text-transform:uppercase;letter-spacing:.07em}
+.rows{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 16px;border-bottom:1px solid var(--line);font-weight:600;color:var(--text);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row:hover{background:var(--card2)}
+.row span{color:var(--muted);font-size:13px;font-weight:400}
 .tabs{display:flex;gap:4px;margin:14px 0 12px;padding:4px;background:var(--card2);border:1px solid var(--line);border-radius:14px}
-.tabs button{flex:1;padding:11px 8px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .18s,color .18s,box-shadow .18s}
-.tabs button.on{background:var(--card);color:var(--text);box-shadow:0 2px 12px -4px rgba(0,0,0,.45);outline:1px solid var(--line2)}
-.banner{border-radius:12px;padding:11px 13px;font-size:14px;margin:12px 0 6px;border:1px solid var(--line2);background:var(--card2);display:flex;align-items:center;gap:8px}
+.tabs button{flex:1;padding:11px 8px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:background .18s,color .18s}
+.tabs button.on{background:var(--pill);color:var(--pill-text)}
+.banner{border-radius:13px;padding:12px 14px;font-size:14px;margin:12px 0 6px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:9px;color:var(--muted)}
 .banner.changed{border-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-text)}
-.banner.none{color:var(--muted)}
 .banner svg{flex:none}
-.day{margin:18px 0 8px;font-size:16px;font-weight:650;letter-spacing:-.01em}
-.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:14px;background:var(--card);box-shadow:var(--shadow)}
-table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
-th{background:var(--card2);color:var(--muted);font-weight:600;text-align:left;padding:9px 11px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)}
-td{padding:11px;border-bottom:1px solid var(--line);vertical-align:top}
+.day{margin:20px 0 8px;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:500px}
+th{background:var(--card2);color:var(--muted);font-weight:600;text-align:left;padding:10px 12px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:0}
-td.n{color:var(--muted);width:34px;text-align:center;font-variant-numeric:tabular-nums}
-td.t{white-space:nowrap;width:96px;font-variant-numeric:tabular-nums}
+td.n{color:var(--muted);width:32px;text-align:center;font-variant-numeric:tabular-nums}
+td.t{white-space:nowrap;width:94px;font-variant-numeric:tabular-nums}
 td.s{min-width:170px}
-td.r{white-space:nowrap;color:var(--muted);width:70px}
-td.p{color:var(--muted);width:130px;font-size:13px}
+td.r{white-space:nowrap;color:var(--muted);width:68px}
+td.p{color:var(--muted);width:128px;font-size:13px}
 .muted{color:var(--muted)}
-.switch{display:flex;gap:4px;margin:10px 0 4px;padding:4px;background:var(--card2);border:1px solid var(--line);border-radius:13px}
-.switch button{flex:1;padding:10px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
-.switch button.on{background:var(--card);color:var(--text);outline:1px solid var(--line2)}
-.empty{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:15px;color:var(--muted)}
-input.q{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line2);background:var(--card);color:var(--text);font-size:15px;margin:6px 0 14px}
-.foot{margin-top:26px;color:var(--muted);font-size:12px;text-align:center;line-height:1.7}
-.foot a{color:var(--muted)}
-.links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:20px 0 6px}
-.links a{background:var(--card2);border:1px solid var(--line2);border-radius:12px;padding:10px 13px;font-size:13px;color:var(--text);display:inline-flex;align-items:center;gap:7px;transition:border-color .15s,transform .15s}
-.links a:hover{border-color:var(--accent-line);text-decoration:none;transform:translateY(-1px)}
-.modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.62);opacity:0;pointer-events:none;transition:opacity .22s ease}
+.switch{display:flex;gap:4px;margin:10px 0 4px;padding:4px;background:var(--card2);border:1px solid var(--line);border-radius:14px}
+.switch button{flex:1;padding:10px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+.switch button.on{background:var(--pill);color:var(--pill-text)}
+.empty{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--muted)}
+input.q{width:100%;padding:13px 15px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;margin:0 0 14px;font-family:inherit;outline:none}
+.foot{margin:26px 0 8px;color:var(--muted);font-size:12px;text-align:center}
+.bottom{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;background:var(--card2);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow);z-index:30}
+.bottom a{display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;color:var(--muted);font-size:14px;font-weight:600;white-space:nowrap}
+.bottom a.on{background:var(--pill);color:var(--pill-text)}
+.modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .22s ease}
 .modal.on{opacity:1;pointer-events:auto}
-.mcard{width:100%;max-width:370px;background:var(--card);border:1px solid var(--line2);border-radius:20px;padding:24px 20px 18px;text-align:center;transform:translateY(18px) scale(.94);opacity:0;transition:transform .3s cubic-bezier(.16,.9,.3,1.25),opacity .22s ease;box-shadow:0 30px 60px -30px rgba(0,0,0,.8)}
+.mcard{width:100%;max-width:370px;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:26px 20px 18px;text-align:center;transform:translateY(18px) scale(.94);opacity:0;transition:transform .3s cubic-bezier(.16,.9,.3,1.25),opacity .22s ease}
 .modal.on .mcard{transform:none;opacity:1}
-.micon{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:18px;background:var(--card2);border:1px solid var(--line2);margin-bottom:14px}
-.micon svg{width:28px;height:28px}
-.mtitle{font-size:17px;font-weight:650;margin-bottom:7px;line-height:1.35}
-.mtext{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5}
-.mbtn{display:block;padding:13px;border-radius:12px;background:var(--accent-bg);border:1px solid var(--accent-line);font-weight:650;color:var(--text);margin-bottom:8px}
-.mbtn:hover{text-decoration:none}
-.mno{width:100%;padding:11px;border-radius:12px;border:1px solid var(--line2);background:transparent;color:var(--muted);font-family:inherit;font-size:14px;cursor:pointer}
-.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;max-width:calc(100% - 28px);background:var(--card2);border:1px solid var(--line2);color:var(--text);padding:11px 15px;border-radius:12px;font-size:13.5px;line-height:1.4;text-align:center;z-index:120;box-shadow:0 8px 26px rgba(0,0,0,.3);transition:opacity .2s ease,transform .26s cubic-bezier(.16,.9,.3,1.25)}
+.micon{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:18px;background:var(--card2);border:1px solid var(--line);margin-bottom:14px}
+.micon svg{width:30px;height:30px}
+.mtitle{font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3;letter-spacing:-.01em}
+.mtext{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.mbtn{display:block;padding:14px;border-radius:14px;background:var(--pill);color:var(--pill-text);font-weight:650;margin-bottom:8px}
+.mno{width:100%;padding:12px;border-radius:14px;border:1px solid var(--line2);background:transparent;color:var(--muted);font-family:inherit;font-size:14px;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:82px;transform:translate(-50%,20px);opacity:0;pointer-events:none;max-width:calc(100% - 28px);background:var(--card2);border:1px solid var(--line2);color:var(--text);padding:11px 16px;border-radius:12px;font-size:13.5px;line-height:1.4;text-align:center;z-index:120;box-shadow:0 10px 30px rgba(0,0,0,.5);transition:opacity .2s ease,transform .26s cubic-bezier(.16,.9,.3,1.25)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 """
 
@@ -297,6 +306,18 @@ I_SEARCH = ic('<circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6L20 20"/>')
 I_BELL = ic('<path d="M6.5 17h11l-1.3-2.2V10a4.2 4.2 0 1 0-8.4 0v4.8z"/>'
             '<path d="M10.3 19.5a1.9 1.9 0 0 0 3.4 0"/>', 16)
 
+I_LOGO = ('<svg viewBox="0 0 40 40" width="38" height="38">'
+         '<rect x="1" y="1" width="38" height="38" rx="11" fill="currentColor" fill-opacity=".07" '
+         'stroke="currentColor" stroke-opacity=".22"/>'
+         '<path d="M9 11.5h22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+         '<circle cx="20" cy="23" r="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/>'
+         '<ellipse cx="20" cy="23" rx="3.9" ry="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/>'
+         '<path d="M11.9 20.4h16.2M11.9 25.6h16.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>'
+         '</svg>')
+I_CHEV = ic('<path d="M9 5.5l6.5 6.5L9 18.5"/>', 16)
+I_GRID = ic('<rect x="3" y="3" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.2"/>'
+            '<rect x="3" y="13.5" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.2"/>', 17)
+I_TEACH = ic('<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c0-3.6 3.2-6.1 7.5-6.1s7.5 2.5 7.5 6.1"/>', 17)
 I_RUB = ('<svg viewBox="0 0 220 220" width="18" height="18" fill="#2ecc71">'
          '<path d="M110,0C49.346,0,0,49.346,0,110s49.346,110,110,110s110-49.346,110-110S170.654,0,110,0z '
          'M110,210c-55.141,0-100-44.86-100-100S54.859,10,110,10s100,44.86,100,100S165.141,210,110,210z"/>'
@@ -425,77 +446,87 @@ def head(title):
 
 def header(home='index.html'):
     return ('<header class="hdr"><div class="hin">'
-            '<a class="brand" href="%s">'
-            '<span class="mark">ГГПК</span>'
+            '<a class="brand" href="%s"><span class="mark">%s</span>'
             '<span class="bt"><b>Расписание</b>'
             '<i>Губкинский горно-политехнический колледж</i></span></a>'
             '<div class="tools">'
-            '<button class="ic" id="th" title="Сменить тему">'
-            '<span class="i-sun">%s</span><span class="i-moon">%s</span></button>'
-            '<span class="ic timer" id="tm" title="До обновления расписания">%s'
-            '<span id="tmt">--:--</span></span>'
-            '<span class="ic timer" id="st" title="Просмотров за сегодня">%s'
+            '<button class="ic" id="tm" title="До обновления расписания">%s</button>'
+            '<span class="ic num" id="st" title="Просмотров за сегодня">%s'
             '<span id="stt">—</span></span>'
-            '<a class="ic" href="%s" data-modal="donate" target="_blank" rel="noopener" '
-            'title="Поддержать проект">%s</a>'
             '<a class="ic" href="%s" data-modal="tg" target="_blank" rel="noopener" '
             'title="Канал с обновлениями">%s</a>'
+            '<a class="ic" href="%s" data-modal="donate" target="_blank" rel="noopener" '
+            'title="Поддержать проект">%s</a>'
+            '<button class="ic" id="th" title="Сменить тему">'
+            '<span class="i-sun">%s</span><span class="i-moon">%s</span></button>'
             '</div></div></header>'
-            % (home, I_SUN, I_MOON, I_CLOCK, I_USERS, DONATE, I_RUB, CHANNEL, I_TG))
+            % (home, I_LOGO, I_CLOCK, I_USERS, CHANNEL, I_TG, DONATE, I_RUB, I_SUN, I_MOON))
 
 
 def foot():
-    return ('<div class="links">'
-            '<a href="%s" data-modal="donate" target="_blank" rel="noopener">%s Поддержать проект</a>'
-            '<a href="%s" data-modal="tg" target="_blank" rel="noopener">%s Канал с обновлениями</a>'
-            '</div>'
-            '<div class="foot">Расписание ГГПК · данные из сообщества ВК<br>'
-            'обновлено %s · сборка каждый час</div>'
-            % (DONATE, I_RUB, CHANNEL, I_TG,
-               datetime.now(MSK).strftime('%d.%m %H:%M')))
+    return ('<div class="foot">данные сообщества ВК · обновлено %s</div>'
+            % datetime.now(MSK).strftime('%d.%m %H:%M'))
 
 
-def page(title, body, home='index.html'):
+def bottom_nav(active, up=''):
+    items = [('groups', up + 'index.html', I_GRID, 'Группы'),
+             ('teachers', up + 'prep.html', I_TEACH, 'Преподаватели')]
+    out = ['<nav class="bottom">']
+    for key, href, icon, label in items:
+        out.append('<a class="%s" href="%s">%s<span>%s</span></a>'
+                   % ('on' if key == active else '', href, icon, label))
+    out.append('</nav>')
+    return ''.join(out)
+
+
+def page(title, body, home='index.html', up='', nav='groups'):
     noscript = ('<noscript><div class="wrap"><div class="empty">Включите JavaScript — '
                 'без него расписание не отобразится.</div></div></noscript>')
     tail = HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL)
     return (head(title) + header(home) + noscript +
             '<div class="wrap">' + body + foot() + '</div>' +
-            MODAL_HTML + TOAST_HTML + tail + '</body></html>')
+            bottom_nav(nav, up) + MODAL_HTML + TOAST_HTML + tail + '</body></html>')
 
 
-# ---------------- страницы ----------------
 def index_page(cat, mine):
-    courses = []
-    for course in sorted(cat):
-        courses.append((course, sorted(cat[course])))
-    parts = ['<h1>Расписание ГГПК</h1>', '<div id="mine"></div>',
-             '<div class="chips" id="courses">']
+    courses = [(course, sorted(cat[course])) for course in sorted(cat)]
+    parts = ['<h1>Расписание занятий</h1>', '<div id="mine"></div>',
+             '<div class="search">', I_SEARCH,
+             '<input id="q" placeholder="Найти группу" autocomplete="off"></div>',
+             '<div class="ccs" id="ccs">']
     for i, (course, groups) in enumerate(courses):
-        parts.append('<span class="chip%s" data-c="%d">%s</span>'
+        parts.append('<span class="cc%s" data-c="%d">%s</span>'
                      % (' on' if i == 0 else '', i, html.escape(course)))
-    parts.append('</div><div id="lists">')
+    parts.append('</div><div class="grid" id="grid">')
     for i, (course, groups) in enumerate(courses):
-        parts.append('<div class="clist" data-c="%d"%s>' % (i, '' if i == 0 else ' hidden'))
         for g in groups:
-            parts.append('<a class="chip" href="g/%s.html?v=%s" data-g="%s">%s</a>'
-                         % (slug(g), VER, slug(g), html.escape(g)))
-        parts.append('</div>')
+            parts.append('<a class="gcard" href="g/%s.html?v=%s" data-c="%d" data-n="%s">'
+                         '<span>%s</span>%s</a>'
+                         % (slug(g), VER, i, html.escape(g.lower()), html.escape(g), I_CHEV))
     parts.append('</div>')
-    parts.append('<h2 class="course">Ещё</h2><div class="chips">'
-                 '<a class="chip" href="prep.html?v=%s">%s Преподаватели</a></div>' % (VER, I_SEARCH))
-    js = ('<script>var NAMES=%s;'
+    parts.append('<h2 class="course">Ещё</h2><div class="rows">'
+                 '<a class="row" href="%s" data-modal="tg" target="_blank" rel="noopener">'
+                 'Канал с обновлениями<span>Telegram</span></a>'
+                 '<a class="row" href="%s" data-modal="donate" target="_blank" rel="noopener">'
+                 'Поддержать проект<span>DonationAlerts</span></a></div>'
+                 % (CHANNEL, DONATE))
+    js = ('<script>var NAMES=%s,q=document.getElementById("q"),grid=document.getElementById("grid"),'
+          'ccs=document.getElementById("ccs"),cur=0;'
           'try{var g=localStorage.getItem("ggpk.group");if(g&&NAMES[g]){'
           'document.getElementById("mine").innerHTML='
-          '"<a class=\\"mine\\" href=\\"g/"+g+".html\\"><b>"+NAMES[g]+"</b>'
-          '<span>ваша группа · открыть расписание</span></a>";}}catch(e){}'
-          'document.getElementById("courses").addEventListener("click",function(e){'
-          'var t=e.target.closest("[data-c]");if(!t)return;'
-          'var i=t.getAttribute("data-c");'
-          'Array.prototype.forEach.call(document.querySelectorAll("#courses .chip"),function(a){a.classList.toggle("on",a===t);});'
-          'Array.prototype.forEach.call(document.querySelectorAll(".clist"),function(a){'
-          'a.hidden=a.getAttribute("data-c")!==i;});});'
-          '</script>' % json.dumps(mine, ensure_ascii=False))
+          '"<a class=\\"mine\\" href=\\"g/"+g+".html\\"><b></b>'
+          '<span></span></a>";'
+          'var el=document.getElementById("mine").firstChild;'
+          'el.firstChild.textContent=NAMES[g];el.lastChild.textContent="ваша группа";}}catch(e){}'
+          'function apply(){var v=(q.value||"").toLowerCase().trim();'
+          'Array.prototype.forEach.call(grid.children,function(c){'
+          'var okC=v?true:c.getAttribute("data-c")===String(cur);'
+          'var okT=c.getAttribute("data-n").indexOf(v)>-1;c.hidden=!(okC&&okT);});}'
+          'ccs.addEventListener("click",function(e){var t=e.target.closest(".cc");if(!t)return;'
+          'cur=+t.getAttribute("data-c");'
+          'Array.prototype.forEach.call(ccs.children,function(a){a.classList.toggle("on",a===t);});'
+          'apply();});'
+          'q.addEventListener("input",apply);apply();</script>' % json.dumps(mine, ensure_ascii=False))
     return page('Расписание ГГПК', ''.join(parts) + js)
 
 
@@ -576,29 +607,32 @@ fetch('../data/'+(MODE==='t'?'p':'g')+'/'+G+'.json?v=%s').then(r=>r.json()).then
 def app_page(title, slug_, name, mode):
     if mode == 't':
         back = '<a href="../prep.html?v=%s">← преподаватели</a>' % VER
+        nav = 'teachers'
     else:
         back = '<a href="../index.html?v=%s">← все группы</a>' % VER
+        nav = 'groups'
     body = ('<div class="sub">%s</div>'
             '<h1>%s</h1><div id="tabs" class="tabs"></div><div id="body">'
             '<div class="empty">Загрузка…</div></div>' % (back, html.escape(name)))
     js = '<script>%s</script>' % (APP_JS % (slug_, name.replace("'", "\\'"), mode, I_BELL, VER))
-    return page(title, body + js, home='../index.html')
+    return page(title, body + js, home='../index.html', up='../', nav=nav)
 
 
 def prep_index(teachers):
     items = sorted(teachers)
-    rows = ['<a class="chip" data-n="%s" href="p/%s.html?v=%s">%s</a>'
-            % (html.escape(t.lower()), slug(t), VER, html.escape(t)) for t in items]
-    body = ('<h1>Преподаватели</h1><div class="sub">Всего: %d · выберите, чтобы открыть расписание</div>'
-            '<input class="q" id="q" placeholder="Фамилия, например Коваль" autocomplete="off">'
-            '<div class="chips" id="list">%s</div>'
-            '<p><a href="index.html?v=%s">← всё расписание</a></p>'
-            '<script>var q=document.getElementById("q"),l=document.getElementById("list");'
+    rows = ['<a class="gcard" data-n="%s" href="p/%s.html?v=%s" style="grid-column:span 2">'
+            '<span>%s</span>%s</a>'
+            % (html.escape(t.lower()), slug(t), VER, html.escape(t), I_CHEV) for t in items]
+    body = ('<h1>Преподаватели</h1>'
+            '<div class="search">%s<input id="q" placeholder="Найти преподавателя" '
+            'autocomplete="off"></div>'
+            '<div class="grid" id="grid">%s</div>'
+            '<script>var q=document.getElementById("q"),g=document.getElementById("grid");'
             'q.addEventListener("input",function(){var v=q.value.toLowerCase().trim();'
-            'Array.prototype.forEach.call(l.children,function(a){'
-            'a.style.display=a.dataset.n.indexOf(v)>-1?"":"none";});});</script>'
-            % (len(items), ''.join(rows), VER))
-    return page('Преподаватели', body)
+            'Array.prototype.forEach.call(g.children,function(a){'
+            'a.hidden=a.getAttribute("data-n").indexOf(v)<0;});});</script>'
+            % (I_SEARCH, ''.join(rows)))
+    return page('Преподаватели', body, nav='teachers')
 
 
 # ---------------- сборка ----------------
