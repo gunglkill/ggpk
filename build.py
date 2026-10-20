@@ -650,7 +650,7 @@ function buildSegs(rows){
     const s1=p.slots[0], s2=p.slots[1];
     if(s1[0] > cursor){
       segs.push({a:cursor, b:s1[0], label: idx===0 ? 'До начала занятий'
-        : 'До ' + mascGen(p.pair) + ' часа ' + femGen(p.pair) + ' пары'});
+        : 'До ' + mascGen(1) + ' часа ' + femGen(p.pair) + ' пары'});
     }
     const firstLabel = (!s2 && isLast) ? 'До конца последней пары' : 'До перемены';
     segs.push({a:s1[0], b:s1[1], label:firstLabel});
@@ -680,7 +680,7 @@ function tickTimerDraw(box, rows){
   const now=new Date();
   const mins=now.getHours()*60 + now.getMinutes() + now.getSeconds()/60;
   if(!plan.segs.length){
-    box.innerHTML='<span class="tp-text">Пар нет</span>';
+    box.innerHTML='<span class="tp-text">'+((rows&&rows.length)?'Недостаточно данных':'Пар нет')+'</span>';
     return;
   }
   if(mins < 420 || mins >= plan.end){
