@@ -6,6 +6,7 @@
 """
 import html
 import json
+import shutil
 import os
 import re
 import sys
@@ -187,16 +188,16 @@ def dates_window(today):
 # ---------------- html ----------------
 CSS = """
 :root{--bg:#000;--card:#0d0d0d;--card2:#151515;--line:#1f1f1f;--line2:#2a2a2a;
---text:#fff;--muted:#8b8b8b;--pill:#fff;--pill-text:#000;--accent:#7aa2ff;
+--text:#fff;--muted:#8b8b8b;--pill:#fff;--pill-text:#000;--accent:#7aa2ff;--grid:#333;
 --warn-bg:#241d08;--warn-line:#7a5f1c;--warn-text:#f0d68a;--head:rgba(0,0,0,.78);
 --shadow:0 16px 40px -24px rgba(0,0,0,.9)}
 html[data-theme=light]{--bg:#fff;--card:#f7f7f7;--card2:#efefef;--line:#e6e6e6;--line2:#d9d9d9;
---text:#0a0a0a;--muted:#6a6a6a;--pill:#0a0a0a;--pill-text:#fff;--accent:#2563eb;
+--text:#0a0a0a;--muted:#6a6a6a;--pill:#0a0a0a;--pill-text:#fff;--accent:#2563eb;--grid:#d6d6d6;
 --warn-bg:#fff7dd;--warn-line:#e0c164;--warn-text:#6b5200;--head:rgba(255,255,255,.8);
 --shadow:0 16px 40px -26px rgba(0,0,0,.35)}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:680px;margin:0 auto;padding:0 18px 96px}
 a{color:inherit;text-decoration:none}
 a:hover{text-decoration:none}
@@ -250,11 +251,14 @@ h2.course{font-size:12.5px;color:var(--muted);font-weight:600;margin:26px 0 8px;
 .day{margin:20px 0 8px;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:16px;background:var(--card)}
 table{width:100%;border-collapse:collapse;font-size:14px;min-width:500px}
-th{background:var(--card2);color:var(--muted);font-weight:600;text-align:left;padding:10px 12px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--line)}
-td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--card2);color:var(--muted);font-weight:600;text-align:left;padding:11px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line);border-right:1px solid var(--grid);font-family:'JetBrains Mono','Manrope',monospace}
+td{padding:12px;border-bottom:1px solid var(--line);border-right:1px solid var(--grid);vertical-align:top}
 tr:last-child td{border-bottom:0}
-td.n{color:var(--muted);width:32px;text-align:center;font-variant-numeric:tabular-nums}
-td.t{white-space:nowrap;width:94px;font-variant-numeric:tabular-nums}
+th:last-child,td:last-child{border-right:0}
+td.r{font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.back{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--text);margin-top:14px}
+td.n{color:var(--muted);width:34px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-variant-numeric:tabular-nums}
+td.t{white-space:nowrap;width:94px;font-family:'JetBrains Mono',monospace;font-size:13px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 td.s{min-width:170px}
 td.r{white-space:nowrap;color:var(--muted);width:68px}
 td.p{color:var(--muted);width:128px;font-size:13px}
@@ -439,13 +443,13 @@ HEADER_EXTRA = """
 TOAST_HTML = '<div class="toast" id="toast"></div>'
 
 
-def head(title):
+def head(title, up=''):
     return ('<!doctype html><html lang="ru"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             '<title>%s</title>'
             '<meta name="description" content="Расписание занятий Губкинского горно-политехнического колледжа">'
-            '<style>%s</style><script>%s</script></head><body>'
-            % (html.escape(title), CSS, THEME_JS))
+            '<link rel="stylesheet" href="%sfonts.css"><style>%s</style><script>%s</script></head><body>'
+            % (html.escape(title), up, CSS, THEME_JS))
 
 
 def header(home='index.html'):
@@ -487,7 +491,7 @@ def page(title, body, home='index.html', up='', nav='groups'):
     noscript = ('<noscript><div class="wrap"><div class="empty">Включите JavaScript — '
                 'без него расписание не отобразится.</div></div></noscript>')
     tail = HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL)
-    return (head(title) + header(home) + noscript +
+    return (head(title, up) + header(home) + noscript +
             '<div class="wrap">' + body + foot() + '</div>' +
             bottom_nav(nav, up) + MODAL_HTML + TOAST_HTML + tail + '</body></html>')
 
@@ -610,10 +614,10 @@ fetch('../data/'+(MODE==='t'?'p':'g')+'/'+G+'.json?v=%s').then(r=>r.json()).then
 
 def app_page(title, slug_, name, mode):
     if mode == 't':
-        back = '<a href="../prep.html?v=%s">← преподаватели</a>' % VER
+        back = '<a class="back" href="../prep.html?v=%s">← преподаватели</a>' % VER
         nav = 'teachers'
     else:
-        back = '<a href="../index.html?v=%s">← все группы</a>' % VER
+        back = '<a class="back" href="../index.html?v=%s">← все группы</a>' % VER
         nav = 'groups'
     body = ('<div class="sub">%s</div>'
             '<h1>%s</h1><div id="tabs" class="tabs"></div><div id="body">'
@@ -769,6 +773,12 @@ def main():
         write('p/%s.html' % sl, app_page('%s — расписание' % name, sl, name, 't'))
 
     write('prep.html', prep_index(teachers))
+    src_fonts = os.path.join(HERE, 'fonts')
+    if os.path.isdir(src_fonts):
+        shutil.copytree(src_fonts, os.path.join(OUT, 'fonts'), dirs_exist_ok=True)
+    css_fonts = os.path.join(HERE, 'fonts.css')
+    if os.path.exists(css_fonts):
+        shutil.copyfile(css_fonts, os.path.join(OUT, 'fonts.css'))
     write('robots.txt', 'User-agent: *\nAllow: /\n')
     print('готово')
 
