@@ -343,9 +343,20 @@ def build(pdf_bytes):
     return total
 
 
+def local_pdf():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'main.pdf')
+    return path if os.path.exists(path) else None
+
+
 def main():
-    data = fetch_main()
-    print('скачано: %d КБ' % (len(data) // 1024))
+    path = local_pdf()
+    if path:
+        print('файл из репозитория: main.pdf')
+        with open(path, 'rb') as f:
+            data = f.read()
+    else:
+        data = fetch_main()
+    print('размер: %d КБ' % (len(data) // 1024))
     n = build(data)
     print('готово: %d групп, %d страниц' % (n, n * 2 + 1))
 
