@@ -634,16 +634,31 @@ function parseSlots(rows){
   return out;
 }
 
+function femGen(n){
+  const m={1:'1-ой',2:'2-ой',3:'3-ей',4:'4-ой',5:'5-ой',6:'6-ой'};
+  return m[n]||n+'-ой';
+}
+function mascGen(n){
+  const m={1:'1-го',2:'2-го',3:'3-го',4:'4-го',5:'5-го',6:'6-го'};
+  return m[n]||n+'-го';
+}
 function buildSegs(rows){
   const pairs=parseSlots(rows), segs=[];
   let cursor=420; // 07:00
-  pairs.forEach(function(p){
+  pairs.forEach(function(p, idx){
+    const isLast=(idx===pairs.length-1);
     const s1=p.slots[0], s2=p.slots[1];
-    if(s1[0] > cursor) segs.push({a:cursor, b:s1[0], label:'До ' + p.pair + ' пары'});
-    segs.push({a:s1[0], b:s1[1], label:'До перемены'});
+    if(s1[0] > cursor){
+      segs.push({a:cursor, b:s1[0], label: idx===0 ? 'До начала занятий'
+        : 'До ' + mascGen(p.pair) + ' часа ' + femGen(p.pair) + ' пары'});
+    }
+    const firstLabel = (!s2 && isLast) ? 'До конца последней пары' : 'До перемены';
+    segs.push({a:s1[0], b:s1[1], label:firstLabel});
     if(s2){
-      if(s2[0] > s1[1]) segs.push({a:s1[1], b:s2[0], label:'До 2 урока'});
-      segs.push({a:s2[0], b:s2[1], label:'До конца ' + p.pair + ' пары'});
+      if(s2[0] > s1[1]){
+        segs.push({a:s1[1], b:s2[0], label:'До ' + mascGen(2) + ' часа ' + femGen(p.pair) + ' пары'});
+      }
+      segs.push({a:s2[0], b:s2[1], label: isLast ? 'До конца последней пары' : 'До перемены'});
       cursor=s2[1];
     } else {
       cursor=s1[1];
