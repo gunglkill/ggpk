@@ -251,7 +251,7 @@ let data=null, tab='today', parity='n';
 const $=s=>document.querySelector(s);
 function iso(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function table(rows,weekday){
+function table(rows){
   let h='<div class="tw"><table><thead><tr><th>№</th><th>Время</th><th>Пара</th><th>Ауд.</th><th>Преподаватель</th></tr></thead><tbody>';
   const has1=rows.some(r=>r[0]===1);
   if(!has1&&rows.length) h+='<tr><td class="n">1</td><td class="t muted">—</td><td class="s muted">—</td><td class="r muted">—</td><td class="p muted">—</td></tr>';
@@ -273,7 +273,7 @@ function renderDay(){
   if(!e) return h+'<div class="empty">Расписание на эту дату ещё не собрано. Откройте «Неделя».</div>';
   h+='<div class="sub" style="margin:2px 0 0">'+esc(NAME)+' · неделя '+e.week+' · '+esc(e.kind)+'</div>';
   h+=banner(e.status);
-  h+=e.rows.length?table(e.rows,t.weekday()):'<div class="empty">Пар нет.</div>';
+  h+=e.rows.length?table(e.rows):'<div class="empty">Пар нет.</div>';
   return h;
 }
 function renderWeek(){
@@ -281,7 +281,7 @@ function renderWeek(){
   const days=data.week[parity]||[];
   for(const d of days){
     if(!d.rows.length) continue;
-    h+='<div class="day">'+esc(d.day)+'</div>'+table(d.rows,null);
+    h+='<div class="day">'+esc(d.day)+'</div>'+table(d.rows);
   }
   return h;
 }
