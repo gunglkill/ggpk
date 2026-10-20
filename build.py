@@ -417,6 +417,11 @@ HEADER_EXTRA = """
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
   tick(); setInterval(tick,20000);
   try{
+    if('serviceWorker' in navigator && location.protocol==='https:'){
+      navigator.serviceWorker.register('__SW__').catch(function(){});
+    }
+  }catch(e){}
+  try{
     fetch('__VERFILE__?_='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();})
       .then(function(v){
         v=(v||'').trim();
@@ -454,6 +459,32 @@ HEADER_EXTRA = """
 
 
 TOAST_HTML = '<div class="toast" id="toast"></div>'
+
+
+SW_JS = """
+const CACHE = 'ggpk-v1';
+self.addEventListener('install', function(){ self.skipWaiting(); });
+self.addEventListener('activate', function(e){ e.waitUntil(self.clients.claim()); });
+self.addEventListener('fetch', function(e){
+  var req = e.request;
+  if(req.method !== 'GET') return;
+  var u = new URL(req.url);
+  if(u.origin !== location.origin) return;
+  e.respondWith(
+    fetch(req).then(function(res){
+      if(res && res.status === 200){
+        var copy = res.clone();
+        caches.open(CACHE).then(function(c){ c.put(req, copy); }).catch(function(){});
+      }
+      return res;
+    }).catch(function(){
+      return caches.match(req).then(function(m){
+        return m || caches.match('./index.html');
+      });
+    })
+  );
+});
+"""
 
 
 def head(title, up=''):
@@ -505,7 +536,8 @@ def page(title, body, home='index.html', up='', nav='groups'):
     noscript = ('<noscript><div class="wrap"><div class="empty">Включите JavaScript — '
                 'без него расписание не отобразится.</div></div></noscript>')
     tail = (HEADER_EXTRA.replace('__DONATE__', DONATE).replace('__CHANNEL__', CHANNEL)
-            .replace('__VERFILE__', up + 'version.txt').replace('__VER__', VER))
+            .replace('__VERFILE__', up + 'version.txt').replace('__VER__', VER)
+            .replace('__SW__', up + 'sw.js'))
     return (head(title, up) + header(home) + noscript +
             '<div class="wrap">' + body + foot() + '</div>' +
             bottom_nav(nav, up) + MODAL_HTML + TOAST_HTML + tail + '</body></html>')
@@ -794,6 +826,7 @@ def main():
     css_fonts = os.path.join(HERE, 'fonts.css')
     if os.path.exists(css_fonts):
         shutil.copyfile(css_fonts, os.path.join(OUT, 'fonts.css'))
+    write('sw.js', SW_JS)
     write('version.txt', VER)
     write('robots.txt', 'User-agent: *\nAllow: /\n')
     print('готово')
