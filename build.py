@@ -297,14 +297,24 @@ HEADER_EXTRA = """
   });
   tick(); setInterval(tick,20000);
   try{
-    var d=new Date(); var key=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-    var seen=sessionStorage.getItem('ggpk.v');
-    if(!seen) sessionStorage.setItem('ggpk.v','1');
-    var url='https://abacus.jasoncameron.dev/'+(seen?'get':'hit')+'/ggpk-site/views-'+key;
-    fetch(url).then(function(r){return r.ok?r.json():null;}).then(function(j){
-      var el=document.getElementById('stt');
-      if(el&&j&&j.value!=null) el.textContent=j.value;
-    }).catch(function(){});
+    var el=document.getElementById('stt');
+    var cached=sessionStorage.getItem('ggpk.stat');
+    if(cached&&el){el.textContent=cached;}
+    else if(el){
+      fetch('https://hitscounter.dev/api/hit?url=ggpk-schedule&color=%235eb5f7')
+        .then(function(r){return r.text();})
+        .then(function(t){
+          var a=t.indexOf('aria-label="');
+          if(a<0) return;
+          var v=t.slice(a+12); v=v.slice(0, v.indexOf('"'));
+          var p=v.split('/');
+          var today=(p[0]||'').trim(), total=(p[1]||'').trim();
+          if(!today) return;
+          el.textContent=today;
+          el.parentNode.title='Сегодня: '+today+' · всего: '+total;
+          sessionStorage.setItem('ggpk.stat', today);
+        }).catch(function(){});
+    }
   }catch(e){}
 })();
 </script>
