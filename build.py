@@ -282,15 +282,29 @@ def prep_page(name, entries):
 
 
 # ---------------- сборка ----------------
+NAME_RE = re.compile(r'[А-ЯЁ][а-яё]+(?:-[А-ЯЁ][а-яё]+)?\s+[А-ЯЁ]\.\s*[А-ЯЁ]\.')
+
+
+def clean_names(field):
+    """Достаёт из поля только «Фамилия И.О.», отбрасывая мусор от парсера."""
+    out = []
+    for m in NAME_RE.finditer(field or ''):
+        name = re.sub(r'\s+', ' ', m.group(0)).strip()
+        if name.lower().startswith('вакансия'):
+            continue
+        if name not in out:
+            out.append(name)
+    return out
+
+
 def collect_teachers(cat):
     names = {}
     for course in cat:
         for g in cat[course]:
             for d, cells in cat[course][g].items():
                 for pair, c in cells.items():
-                    t = (c.get('teacher') or '').strip()
-                    if t:
-                        names.setdefault(t, []).append(
+                    for name in clean_names(c.get('teacher') or ''):
+                        names.setdefault(name, []).append(
                             (g, d, pair, c.get('subject') or '', c.get('room') or ''))
     return names
 
