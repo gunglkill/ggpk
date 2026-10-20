@@ -205,7 +205,7 @@ a:hover{text-decoration:none}
 .brand{display:flex;align-items:center;gap:11px;min-width:0}
 .brand .mark{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--text)}
 .brand b{display:block;font-size:15px;font-weight:700;line-height:1.2;letter-spacing:-.01em}
-.brand i{display:block;font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
+.brand i{display:block;font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
 .tools{margin-left:auto;display:flex;align-items:center;gap:4px}
 @media (max-width:600px){.brand i{display:none}}
 .ic{display:inline-flex;align-items:center;justify-content:center;gap:6px;width:36px;height:36px;border-radius:11px;border:1px solid transparent;background:transparent;color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s;flex:none}
@@ -213,9 +213,9 @@ a:hover{text-decoration:none}
 .ic:active{transform:scale(.96)}
 .ic svg{display:block}
 .ic.num{width:auto;min-width:36px;padding:0 9px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
-#th .i-moon{display:none}
-html[data-theme=light] #th .i-sun{display:none}
-html[data-theme=light] #th .i-moon{display:inline-flex}
+#th .i-sun{display:none}
+html[data-theme=light] #th .i-moon{display:none}
+html[data-theme=light] #th .i-sun{display:inline-flex}
 h1{font-size:clamp(30px,7vw,44px);line-height:1.04;letter-spacing:-.035em;font-weight:800;margin:26px 0 18px}
 .sub{color:var(--muted);font-size:13px;margin:-8px 0 14px}
 .mine{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line2);border-radius:14px;padding:14px 16px;margin:0 0 14px;font-weight:600}
