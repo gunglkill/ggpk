@@ -5,6 +5,7 @@
 разбирает его и генерирует готовые HTML-страницы в папку site/.
 """
 import html
+import json
 import os
 import re
 import sys
@@ -66,9 +67,11 @@ def slug(text):
     return s or 'x'
 
 
-def http_get(url, timeout=90):
-    req = urllib.request.Request(url, headers={'User-Agent': UA,
-                                               'Accept-Language': 'ru-RU,ru;q=0.9'})
+def http_get(url, timeout=90, referer=None):
+    headers = {'User-Agent': UA, 'Accept-Language': 'ru-RU,ru;q=0.9'}
+    if referer:
+        headers['Referer'] = referer
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read()
 
@@ -84,13 +87,20 @@ def vk_posts():
 
 
 def vk_download(href):
-    page = http_get('https://vk.com' + href).decode('cp1251', 'ignore')
-    m = re.search(r'"docUrl":"(https:[^"]+)"', page)
-    if not m:
-        raise RuntimeError('нет прямой ссылки на файл')
-    import json
-    url = json.loads('"' + m.group(1) + '"')
-    return http_get(url, timeout=180)
+    last = None
+    for attempt in range(1, 5):
+        try:
+            page = http_get('https://vk.com' + href).decode('cp1251', 'ignore')
+            m = re.search(r'"docUrl":"(https:[^"]+)"', page)
+            if not m:
+                raise RuntimeError('нет прямой ссылки на файл')
+            url = json.loads('"' + m.group(1) + '"')
+            return http_get(url, timeout=120, referer='https://vk.com/')
+        except Exception as e:
+            last = e
+            print('попытка %d не удалась: %s' % (attempt, e))
+            time.sleep(4 * attempt)
+    raise last
 
 
 def fetch_main():
