@@ -481,12 +481,13 @@ self.addEventListener('fetch', function(e){
     fetch(req).then(function(res){
       if(res && res.status === 200){
         var copy = res.clone();
-        caches.open(CACHE).then(function(c){ c.put(req, copy); }).catch(function(){});
+        var key = new Request(u.origin + u.pathname);
+        caches.open(CACHE).then(function(c){ c.put(key, copy); }).catch(function(){});
       }
       return res;
     }).catch(function(){
-      return caches.match(req).then(function(m){
-        return m || caches.match('./index.html');
+      return caches.match(req, {ignoreSearch: true}).then(function(m){
+        return m || caches.match('./index.html', {ignoreSearch: true});
       });
     })
   );
