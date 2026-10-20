@@ -720,7 +720,7 @@ function renderDay(){
   let h='<div class="day">'+(e?esc(e.label):'Нет данных')+'</div>';
   if(!e) return h+'<div class="empty">Расписание на эту дату ещё не собрано. Откройте «Неделя».</div>';
   h+='<div class="sub" style="margin:2px 0 0">'+esc(NAME)+' · неделя '+e.week+' · '+esc(e.kind)+'</div>';
-  h+='<div class="tp-row" id="tprow"></div>';
+  if(tab==='today') h+='<div class="tp-row" id="tprow"></div>';
   h+=banner(e.status);
   h+=e.rows.length?table(e.rows):'<div class="empty">Пар нет.</div>';
   return h;
