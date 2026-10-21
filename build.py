@@ -353,6 +353,17 @@ I_TG = ('<svg viewBox="0 0 100 100" width="18" height="18" fill="#229ED9">'
         'c5.037,3.566,14.945,8.699,16.452-2.146c0,0,5.961-37.435,5.961-37.435c1.908-12.637,3.815-24.321,4.053-27.659'
         'C97.307,8.804,88.723,12.142,88.723,12.142z"/></svg>')
 
+def _iconsvg(name):
+    p = os.path.join(HERE, 'icons', name)
+    try:
+        with open(p, 'r', encoding='utf-8') as f:
+            return f.read()
+    except Exception:
+        return ''
+
+I_M_DONATE = _iconsvg('donations.svg')
+I_M_TG = _iconsvg('news.svg')
+
 MODAL_HTML = ('<div class="modal" id="m"><div class="mcard">'
               '<div class="micon" id="micon"></div>'
               '<div class="mtitle" id="mtitle"></div>'
@@ -361,7 +372,7 @@ MODAL_HTML = ('<div class="modal" id="m"><div class="mcard">'
               '<button class="mno" id="mno">Закрыть</button>'
               '</div></div>'
               '<span id="ic-donate" hidden>%s</span>'
-              '<span id="ic-tg" hidden>%s</span>' % (I_RUB, I_TG))
+              '<span id="ic-tg" hidden>%s</span>' % (I_M_DONATE, I_M_TG))
 
 HEADER_EXTRA = """
 <script>
@@ -472,9 +483,13 @@ TOAST_HTML = '<div class="toast" id="toast"></div>'
 
 
 SW_JS = """
-const CACHE = 'ggpk-v1';
+const CACHE = 'ggpk-v3';
 self.addEventListener('install', function(){ self.skipWaiting(); });
-self.addEventListener('activate', function(e){ e.waitUntil(self.clients.claim()); });
+self.addEventListener('activate', function(e){
+  e.waitUntil(caches.keys().then(function(ks){
+    return Promise.all(ks.map(function(k){ return k === CACHE ? null : caches.delete(k); }));
+  }).then(function(){ return self.clients.claim(); }));
+});
 self.addEventListener('fetch', function(e){
   var req = e.request;
   if(req.method !== 'GET') return;
@@ -505,19 +520,18 @@ def head(title, up=''):
             '<title>%s</title>'
             '<meta name="description" content="Расписание занятий Губкинского горно-политехнического колледжа">'
             '<link rel="icon" type="image/svg+xml" href="%sicons/favicon.svg">'
+            '<link rel="icon" type="image/png" sizes="32x32" href="%sicons/icon32.png">'
             '<link rel="icon" type="image/png" sizes="192x192" href="%sicons/icon192.png">'
             '<link rel="apple-touch-icon" href="%sicons/icon192.png">'
             '<link rel="stylesheet" href="%sfonts.css"><style>%s</style><script>%s</script></head><body>'
-            % (html.escape(title), up, up, up, up, CSS, THEME_JS))
+            % (html.escape(title), up, up, up, up, up, CSS, THEME_JS))
 
 
 def header(home='index.html'):
     return ('<header class="hdr"><div class="hin">'
             '<a class="brand" href="%s"><span class="mark">%s</span>'
-            '<span class="bt"><b>Расписание</b>'
-            '<i>Губкинский горно-политехнический колледж</i></span></a>'
+            '<span class="bt"><b>Timely</b></span></a>'
             '<div class="tools">'
-            '<button class="ic" id="tm" title="До обновления расписания">%s</button>'
             '<span class="ic num" id="st" title="Просмотров за сегодня">%s'
             '<span id="stt">—</span></span>'
             '<a class="ic" href="%s" data-modal="tg" target="_blank" rel="noopener" '
@@ -527,7 +541,7 @@ def header(home='index.html'):
             '<button class="ic" id="th" title="Сменить тему">'
             '<span class="i-sun">%s</span><span class="i-moon">%s</span></button>'
             '</div></div></header>'
-            % (home, I_LOGO, I_CLOCK, I_USERS, CHANNEL, I_TG, DONATE, I_RUB, I_SUN, I_MOON))
+            % (home, I_LOGO, I_USERS, CHANNEL, I_TG, DONATE, I_RUB, I_SUN, I_MOON))
 
 
 def foot():
