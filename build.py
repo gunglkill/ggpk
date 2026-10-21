@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import schedule_core as sc  # noqa: E402
+from schedule_names import parse_schedule_date  # noqa: E402
 
 OUT = os.path.join(HERE, 'site')
 MSK = timezone(timedelta(hours=5))
@@ -23,7 +24,6 @@ VER = datetime.now(MSK).strftime('%Y%m%d%H%M')
 
 DONATE = 'https://dalink.to/mori_iuvenis'
 CHANNEL = 'https://t.me/+p3brK1bafQplNmNi'
-VK = 'https://vk.com/club216202806'
 CHAT = 'https://t.me/+WaRfhKYRo0c5YzZi'
 
 MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
@@ -137,17 +137,10 @@ def load_changes(folder):
     for f in sorted(os.listdir(folder)):
         if not f.lower().endswith('.pdf'):
             continue
-        name = f.lower()
-        iso = None
-        m = re.match(r'(\d{4})-(\d{2})-(\d{2})', name)
-        if m:
-            iso = '%s-%s-%s' % (m.group(1), m.group(2), m.group(3))
-        else:
-            m = re.match(r'(\d{2})\.(\d{2})\.(\d{4})', name)
-            if m:
-                iso = '%s-%s-%s' % (m.group(3), m.group(2), m.group(1))
-        if not iso:
+        parsed_date = parse_schedule_date(f)
+        if not parsed_date:
             continue
+        iso = parsed_date.isoformat()
         try:
             out[iso] = sc.parse_changes(os.path.join(folder, f))
         except Exception as e:
@@ -206,7 +199,6 @@ a:hover{text-decoration:none}
 .hin{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:14px 18px}
 .brand{display:flex;align-items:center;gap:11px;min-width:0}
 .brand .mark{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--text)}
-.brand .mark svg{width:100%;height:100%;display:block}
 .brand b{display:block;font-size:15px;font-weight:700;line-height:1.2;letter-spacing:-.01em}
 .brand i{display:block;font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
 .tools{margin-left:auto;display:flex;align-items:center;gap:4px}
@@ -278,8 +270,6 @@ td.p{color:var(--muted);width:128px;font-size:13px}
 .empty{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--muted)}
 input.q{width:100%;padding:13px 15px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;margin:0 0 14px;font-family:inherit;outline:none}
 .foot{margin:26px 0 8px;color:var(--muted);font-size:12px;text-align:center}
-.foot a{color:var(--muted);text-decoration:none;padding:6px 10px;margin:-6px -10px}
-.foot a:active{opacity:.75}
 .bottom{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;background:var(--card2);border:1px solid var(--line2);border-radius:999px;box-shadow:var(--shadow);z-index:30}
 .bottom a{display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;color:var(--muted);font-size:14px;font-weight:600;white-space:nowrap}
 .bottom a.on{background:var(--pill);color:var(--pill-text)}
@@ -287,8 +277,8 @@ input.q{width:100%;padding:13px 15px;border-radius:14px;border:1px solid var(--l
 .modal.on{opacity:1;pointer-events:auto}
 .mcard{width:100%;max-width:370px;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:26px 20px 18px;text-align:center;transform:translateY(18px) scale(.94);opacity:0;transition:transform .3s cubic-bezier(.16,.9,.3,1.25),opacity .22s ease}
 .modal.on .mcard{transform:none;opacity:1}
-.micon{display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:50%;overflow:hidden;background:var(--card2);border:1px solid var(--line);margin-bottom:14px}
-.micon svg{width:100%;height:100%;display:block;border-radius:50%}
+.micon{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:18px;background:var(--card2);border:1px solid var(--line);margin-bottom:14px}
+.micon svg{width:30px;height:30px}
 .mtitle{font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3;letter-spacing:-.01em}
 .mtext{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5}
 .mbtn{display:block;padding:14px;border-radius:14px;background:var(--pill);color:var(--pill-text);font-weight:650;margin-bottom:8px}
@@ -323,6 +313,14 @@ I_SEARCH = ic('<circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6L20 20"/>')
 I_BELL = ic('<path d="M6.5 17h11l-1.3-2.2V10a4.2 4.2 0 1 0-8.4 0v4.8z"/>'
             '<path d="M10.3 19.5a1.9 1.9 0 0 0 3.4 0"/>', 16)
 
+I_LOGO = ('<svg viewBox="0 0 40 40" width="38" height="38">'
+         '<rect x="1" y="1" width="38" height="38" rx="11" fill="currentColor" fill-opacity=".07" '
+         'stroke="currentColor" stroke-opacity=".22"/>'
+         '<path d="M9 11.5h22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+         '<circle cx="20" cy="23" r="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/>'
+         '<ellipse cx="20" cy="23" rx="3.9" ry="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/>'
+         '<path d="M11.9 20.4h16.2M11.9 25.6h16.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>'
+         '</svg>')
 I_CHEV = ic('<path d="M9 5.5l6.5 6.5L9 18.5"/>', 16)
 I_GRID = ic('<rect x="3" y="3" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.2"/>'
             '<rect x="3" y="13.5" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.2"/>', 17)
@@ -346,18 +344,6 @@ I_TG = ('<svg viewBox="0 0 100 100" width="18" height="18" fill="#229ED9">'
         'c5.037,3.566,14.945,8.699,16.452-2.146c0,0,5.961-37.435,5.961-37.435c1.908-12.637,3.815-24.321,4.053-27.659'
         'C97.307,8.804,88.723,12.142,88.723,12.142z"/></svg>')
 
-def _iconsvg(name):
-    p = os.path.join(HERE, 'icons', name)
-    try:
-        with open(p, 'r', encoding='utf-8') as f:
-            return f.read()
-    except Exception:
-        return ''
-
-I_M_DONATE = _iconsvg('donations.svg')
-I_M_TG = _iconsvg('news.svg')
-I_LOGO = _iconsvg('favicon.svg')
-
 MODAL_HTML = ('<div class="modal" id="m"><div class="mcard">'
               '<div class="micon" id="micon"></div>'
               '<div class="mtitle" id="mtitle"></div>'
@@ -366,18 +352,18 @@ MODAL_HTML = ('<div class="modal" id="m"><div class="mcard">'
               '<button class="mno" id="mno">Закрыть</button>'
               '</div></div>'
               '<span id="ic-donate" hidden>%s</span>'
-              '<span id="ic-tg" hidden>%s</span>' % (I_M_DONATE, I_M_TG))
+              '<span id="ic-tg" hidden>%s</span>' % (I_RUB, I_TG))
 
 HEADER_EXTRA = """
 <script>
 (function(){
   var root=document.documentElement;
   var MODAL={
-    donate:{t:'Хотите поддержать автора?',
-            x:'Если сайт вам полезен — это добровольное спасибо автору за его работу.',
+    donate:{t:'Хотите поддержать проект?',
+            x:'Это поможет оплатить сервер, чтобы расписание работало круглосуточно и без пропусков.',
             b:'Донат', u:'__DONATE__', i:'ic-donate'},
     tg:{t:'Хотите перейти в Telegram-канал разработчика?',
-        x:'Там новости, логи обновлений и всё, что меняется на сайте.',
+        x:'Там логи обновлений, новости проекта и всё, что меняется на сайте.',
         b:'Перейти', u:'__CHANNEL__', i:'ic-tg'}
   };
   function openModal(k){
@@ -477,13 +463,9 @@ TOAST_HTML = '<div class="toast" id="toast"></div>'
 
 
 SW_JS = """
-const CACHE = 'ggpk-v3';
+const CACHE = 'ggpk-v1';
 self.addEventListener('install', function(){ self.skipWaiting(); });
-self.addEventListener('activate', function(e){
-  e.waitUntil(caches.keys().then(function(ks){
-    return Promise.all(ks.map(function(k){ return k === CACHE ? null : caches.delete(k); }));
-  }).then(function(){ return self.clients.claim(); }));
-});
+self.addEventListener('activate', function(e){ e.waitUntil(self.clients.claim()); });
 self.addEventListener('fetch', function(e){
   var req = e.request;
   if(req.method !== 'GET') return;
@@ -513,34 +495,32 @@ def head(title, up=''):
             '<meta name="color-scheme" content="dark light">'
             '<title>%s</title>'
             '<meta name="description" content="Расписание занятий Губкинского горно-политехнического колледжа">'
-            '<link rel="icon" type="image/svg+xml" href="%sicons/favicon.svg">'
-            '<link rel="icon" type="image/png" sizes="32x32" href="%sicons/icon32.png">'
-            '<link rel="icon" type="image/png" sizes="192x192" href="%sicons/icon192.png">'
-            '<link rel="apple-touch-icon" href="%sicons/icon192.png">'
             '<link rel="stylesheet" href="%sfonts.css"><style>%s</style><script>%s</script></head><body>'
-            % (html.escape(title), up, up, up, up, up, CSS, THEME_JS))
+            % (html.escape(title), up, CSS, THEME_JS))
 
 
 def header(home='index.html'):
     return ('<header class="hdr"><div class="hin">'
             '<a class="brand" href="%s"><span class="mark">%s</span>'
-            '<span class="bt"><b>Timely</b></span></a>'
+            '<span class="bt"><b>Расписание</b>'
+            '<i>Губкинский горно-политехнический колледж</i></span></a>'
             '<div class="tools">'
+            '<button class="ic" id="tm" title="До обновления расписания">%s</button>'
             '<span class="ic num" id="st" title="Просмотров за сегодня">%s'
             '<span id="stt">—</span></span>'
             '<a class="ic" href="%s" data-modal="tg" target="_blank" rel="noopener" '
             'title="Канал с обновлениями">%s</a>'
             '<a class="ic" href="%s" data-modal="donate" target="_blank" rel="noopener" '
-            'title="Поддержать разработчика">%s</a>'
+            'title="Поддержать проект">%s</a>'
             '<button class="ic" id="th" title="Сменить тему">'
             '<span class="i-sun">%s</span><span class="i-moon">%s</span></button>'
             '</div></div></header>'
-            % (home, I_LOGO, I_USERS, CHANNEL, I_TG, DONATE, I_RUB, I_SUN, I_MOON))
+            % (home, I_LOGO, I_CLOCK, I_USERS, CHANNEL, I_TG, DONATE, I_RUB, I_SUN, I_MOON))
 
 
 def foot():
-    return ('<div class="foot"><a href="%s" target="_blank" rel="noopener">данные сообщества ВК</a></div>'
-            % VK)
+    return ('<div class="foot">данные сообщества ВК · обновлено %s</div>'
+            % datetime.now(MSK).strftime('%d.%m %H:%M'))
 
 
 def bottom_nav(active, up=''):
@@ -585,7 +565,7 @@ def index_page(cat, mine):
                  '<a class="row" href="%s" data-modal="tg" target="_blank" rel="noopener">'
                  'Канал с обновлениями<span>Telegram</span></a>'
                  '<a class="row" href="%s" data-modal="donate" target="_blank" rel="noopener">'
-                 'Поддержать разработчика<span>DonationAlerts</span></a></div>'
+                 'Поддержать проект<span>DonationAlerts</span></a></div>'
                  % (CHANNEL, DONATE))
     js = ('<script>var NAMES=%s,q=document.getElementById("q"),grid=document.getElementById("grid"),'
           'ccs=document.getElementById("ccs"),cur=0;'
@@ -947,9 +927,6 @@ def main():
     css_fonts = os.path.join(HERE, 'fonts.css')
     if os.path.exists(css_fonts):
         shutil.copyfile(css_fonts, os.path.join(OUT, 'fonts.css'))
-    ic = os.path.join(HERE, 'icons')
-    if os.path.isdir(ic):
-        shutil.copytree(ic, os.path.join(OUT, 'icons'), dirs_exist_ok=True)
     write('sw.js', SW_JS)
     write('version.txt', VER)
     write('robots.txt', 'User-agent: *\nAllow: /\n')
