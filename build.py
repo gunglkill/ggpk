@@ -287,8 +287,8 @@ input.q{width:100%;padding:13px 15px;border-radius:14px;border:1px solid var(--l
 .modal.on{opacity:1;pointer-events:auto}
 .mcard{width:100%;max-width:370px;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:26px 20px 18px;text-align:center;transform:translateY(18px) scale(.94);opacity:0;transition:transform .3s cubic-bezier(.16,.9,.3,1.25),opacity .22s ease}
 .modal.on .mcard{transform:none;opacity:1}
-.micon{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:18px;background:var(--card2);border:1px solid var(--line);margin-bottom:14px}
-.micon svg{width:30px;height:30px}
+.micon{display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:50%;overflow:hidden;background:var(--card2);border:1px solid var(--line);margin-bottom:14px}
+.micon svg{width:100%;height:100%;display:block;border-radius:50%}
 .mtitle{font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3;letter-spacing:-.01em}
 .mtext{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5}
 .mbtn{display:block;padding:14px;border-radius:14px;background:var(--pill);color:var(--pill-text);font-weight:650;margin-bottom:8px}
