@@ -368,8 +368,8 @@ HEADER_EXTRA = """
 (function(){
   var root=document.documentElement;
   var MODAL={
-    donate:{t:'Хотите поддержать проект?',
-            x:'Это поможет оплатить сервер, чтобы расписание работало круглосуточно и без пропусков.',
+    donate:{t:'Хотите поддержать автора?',
+            x:'Если сайт вам полезен — это добровольное спасибо автору за его работу.',
             b:'Донат', u:'__DONATE__', i:'ic-donate'},
     tg:{t:'Хотите перейти в Telegram-канал разработчика?',
         x:'Там логи обновлений, новости проекта и всё, что меняется на сайте.',
@@ -520,7 +520,7 @@ def header(home='index.html'):
             '<a class="ic" href="%s" data-modal="tg" target="_blank" rel="noopener" '
             'title="Канал с обновлениями">%s</a>'
             '<a class="ic" href="%s" data-modal="donate" target="_blank" rel="noopener" '
-            'title="Поддержать проект">%s</a>'
+            'title="Поддержать разработчика">%s</a>'
             '<button class="ic" id="th" title="Сменить тему">'
             '<span class="i-sun">%s</span><span class="i-moon">%s</span></button>'
             '</div></div></header>'
@@ -574,7 +574,7 @@ def index_page(cat, mine):
                  '<a class="row" href="%s" data-modal="tg" target="_blank" rel="noopener">'
                  'Канал с обновлениями<span>Telegram</span></a>'
                  '<a class="row" href="%s" data-modal="donate" target="_blank" rel="noopener">'
-                 'Поддержать проект<span>DonationAlerts</span></a></div>'
+                 'Поддержать разработчика<span>DonationAlerts</span></a></div>'
                  % (CHANNEL, DONATE))
     js = ('<script>var NAMES=%s,q=document.getElementById("q"),grid=document.getElementById("grid"),'
           'ccs=document.getElementById("ccs"),cur=0;'
