@@ -939,6 +939,9 @@ def main():
     css_fonts = os.path.join(HERE, 'fonts.css')
     if os.path.exists(css_fonts):
         shutil.copyfile(css_fonts, os.path.join(OUT, 'fonts.css'))
+    ic = os.path.join(HERE, 'icons')
+    if os.path.isdir(ic):
+        shutil.copytree(ic, os.path.join(OUT, 'icons'), dirs_exist_ok=True)
     write('sw.js', SW_JS)
     write('version.txt', VER)
     write('robots.txt', 'User-agent: *\nAllow: /\n')
