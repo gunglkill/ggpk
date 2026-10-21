@@ -23,6 +23,7 @@ VER = datetime.now(MSK).strftime('%Y%m%d%H%M')
 
 DONATE = 'https://dalink.to/mori_iuvenis'
 CHANNEL = 'https://t.me/+p3brK1bafQplNmNi'
+VK = 'https://vk.com/club216202806'
 CHAT = 'https://t.me/+WaRfhKYRo0c5YzZi'
 
 MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
@@ -276,6 +277,8 @@ td.p{color:var(--muted);width:128px;font-size:13px}
 .empty{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--muted)}
 input.q{width:100%;padding:13px 15px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;margin:0 0 14px;font-family:inherit;outline:none}
 .foot{margin:26px 0 8px;color:var(--muted);font-size:12px;text-align:center}
+.foot a{color:var(--muted);text-decoration:none;padding:6px 10px;margin:-6px -10px}
+.foot a:active{opacity:.75}
 .bottom{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:4px;padding:4px;background:var(--card2);border:1px solid var(--line2);border-radius:999px;box-shadow:var(--shadow);z-index:30}
 .bottom a{display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;color:var(--muted);font-size:14px;font-weight:600;white-space:nowrap}
 .bottom a.on{background:var(--pill);color:var(--pill-text)}
@@ -525,8 +528,8 @@ def header(home='index.html'):
 
 
 def foot():
-    return ('<div class="foot">данные сообщества ВК · обновлено %s</div>'
-            % datetime.now(MSK).strftime('%d.%m %H:%M'))
+    return ('<div class="foot"><a href="%s" target="_blank" rel="noopener">данные сообщества ВК</a></div>'
+            % VK)
 
 
 def bottom_nav(active, up=''):
