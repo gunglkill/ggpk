@@ -504,8 +504,11 @@ def head(title, up=''):
             '<meta name="color-scheme" content="dark light">'
             '<title>%s</title>'
             '<meta name="description" content="Расписание занятий Губкинского горно-политехнического колледжа">'
+            '<link rel="icon" type="image/svg+xml" href="%sicons/favicon.svg">'
+            '<link rel="icon" type="image/png" sizes="192x192" href="%sicons/icon192.png">'
+            '<link rel="apple-touch-icon" href="%sicons/icon192.png">'
             '<link rel="stylesheet" href="%sfonts.css"><style>%s</style><script>%s</script></head><body>'
-            % (html.escape(title), up, CSS, THEME_JS))
+            % (html.escape(title), up, up, up, up, CSS, THEME_JS))
 
 
 def header(home='index.html'):
