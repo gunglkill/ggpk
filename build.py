@@ -206,6 +206,7 @@ a:hover{text-decoration:none}
 .hin{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:14px 18px}
 .brand{display:flex;align-items:center;gap:11px;min-width:0}
 .brand .mark{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.brand .mark svg{width:100%;height:100%;display:block}
 .brand b{display:block;font-size:15px;font-weight:700;line-height:1.2;letter-spacing:-.01em}
 .brand i{display:block;font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:330px}
 .tools{margin-left:auto;display:flex;align-items:center;gap:4px}
@@ -322,14 +323,6 @@ I_SEARCH = ic('<circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6L20 20"/>')
 I_BELL = ic('<path d="M6.5 17h11l-1.3-2.2V10a4.2 4.2 0 1 0-8.4 0v4.8z"/>'
             '<path d="M10.3 19.5a1.9 1.9 0 0 0 3.4 0"/>', 16)
 
-I_LOGO = ('<svg viewBox="0 0 40 40" width="38" height="38">'
-         '<rect x="1" y="1" width="38" height="38" rx="11" fill="currentColor" fill-opacity=".07" '
-         'stroke="currentColor" stroke-opacity=".22"/>'
-         '<path d="M9 11.5h22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
-         '<circle cx="20" cy="23" r="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/>'
-         '<ellipse cx="20" cy="23" rx="3.9" ry="8.4" fill="none" stroke="currentColor" stroke-width="1.9"/>'
-         '<path d="M11.9 20.4h16.2M11.9 25.6h16.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>'
-         '</svg>')
 I_CHEV = ic('<path d="M9 5.5l6.5 6.5L9 18.5"/>', 16)
 I_GRID = ic('<rect x="3" y="3" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2.2"/>'
             '<rect x="3" y="13.5" width="7.5" height="7.5" rx="2.2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2.2"/>', 17)
@@ -363,6 +356,7 @@ def _iconsvg(name):
 
 I_M_DONATE = _iconsvg('donations.svg')
 I_M_TG = _iconsvg('news.svg')
+I_LOGO = _iconsvg('favicon.svg')
 
 MODAL_HTML = ('<div class="modal" id="m"><div class="mcard">'
               '<div class="micon" id="micon"></div>'
