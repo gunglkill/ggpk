@@ -1,9 +1,6 @@
 name: Расписание ГГПК
 
 on:
-  schedule:
-    # каждый час, со сдвигом на 7 минут (GitHub советует не ставить ровно в :00)
-    - cron: '7 * * * *'
   workflow_dispatch:
 
 permissions:
